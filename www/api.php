@@ -4,8 +4,24 @@
 
 $bs = new Tipsy;
 
+$bs->config('../config.ini');
+$bs->config([
+	'db' => [
+		'host' => 'blah'
+	]
+]);
+
 $bs->controller('ViewController', function() {
 	$this->scope->test = 'asd';
+});
+
+$bs->model('DBO/TestModel', function() {
+	$model = [
+		'test' => function() {
+			die('testing');
+		}
+	];
+	return $model;
 });
 
 
@@ -28,11 +44,17 @@ $bs->router()
 	->when('upload', function() {
 		die('upload');
 	})
-	->when('file/:id/edit', function() {
-		die('edit - ' . $this->route()->param('id'));
+	->when('file/:id/edit', function($params) {
+		die('edit - ' . $params['id']);
 	})
-	->when('file/:blob', function() {
-		die('file - '.$this->route()->param('blob'));
+	->when('file/:id', function($TestModel) {
+		$TestModel->test(1);
+exit;
+		$File->fetch(1);
+		$this->model('File')->fetch(1);
+		$this->model('File')->query('select * from file where id=1');
+		$file = File::o($this->route()->param('id'));
+		print_r($file);
 	})
 	->when('view', [
 		'controller' => 'ViewController',
@@ -45,9 +67,9 @@ $bs->router()
 		'controller' => 'LibraryController'
 	])
 	->otherwise(function() {
+		// @todo: add redirect to
 		die('home');
 	});
-	
 $bs->start();
 
 
@@ -62,16 +84,19 @@ $bs->start();
  */
 class Tipsy {
 	private $_controllers;
+	private $_config;
+	private $_models;
 	
 	public function __construct() {
 		$this->_controllers = [];
+		$this->_config = [];
+		$this->_models = [];
 	}
 
 	public function start() {
 		$this->page = explode('/', $_REQUEST['__url']);
 
 		$route = $this->router()->match($_REQUEST['__url']);
-		//preg_replace('/[^0-9a-z]/i','',$_REQUEST['__url'])
 
 		$route->controller()->init();
 	}
@@ -91,8 +116,68 @@ class Tipsy {
 			return null;
 		}
 	}
+	public function config($args) {
+		if (is_string($args)) {
+			// assume its a config file
+			$config = parse_ini_file($args);
+			if ($config === false) {
+				throw new Exception('Failed to read config.');
+			} else {
+				$this->_config = array_merge($this->_config, $config);
+			}
+			
+			return $this;
 
-	
+		} elseif (is_array($args)) {
+			$this->_config = array_merge($this->_config, $args);
+			return $this;
+
+		} else {
+			return $this->_config;
+		}		
+	}
+	public function model($model, $args = null) {
+		if ($args) {
+			$model = explode('/',$model);
+			if (count($model) > 2) {
+				throw new Exception('Cant extend more than one model.');
+			} elseif (count($model) > 1) {
+				$extend = array_shift($model);
+			}
+			$model = array_shift($model);
+
+			if ($model && is_callable($args)) {
+				$config = call_user_func_array($args, []);
+			} elseif ($model && is_array()) {
+				$config = $args;
+			}
+			
+			if ($this->_model[$extend]) {
+				$extend = $this->_model[$extend];
+			}
+
+			$this->_model[$model] = [
+				'reflection' => new ReflectionClass($extend ? $extend : 'Model'),
+				'config' => $config
+			];
+			return $this;
+
+		} else {
+			$instance = $this->_model[$model]['reflection']->newInstance();
+			foreach ($this->_model[$model]['config'] as $name => $config) {
+				if (is_callable($config)) {
+					$instance->addMethod($name, $config);
+				} else {
+					$instance->{$name} = $config;
+				}
+			}
+
+			return $instance;
+		}
+	}
+	public function models() {
+		return $this->_model;
+	}
 }
 
 
@@ -169,7 +254,6 @@ class Route  {
 		$this->_caseSensitive = $args['caseSensitive'] ? true : false;
 		$this->_view = $args['view'] ? true : false;
 		$this->_route = preg_replace('/^\/?(.*?)\/?$/i','\\1',$args['route']);
-		$this->_simpleRoute = preg_replace('/:[a-z]+(\/?)/i','',$this->_route);
 		$this->_tipsy = $args['tipsy'];
 	}
 	
@@ -189,7 +273,7 @@ class Route  {
 		$r = preg_replace('/:[a-z]+/i','.*',$this->_route);
 		$r = preg_replace('/\//','\/',$r);
 
-		if (preg_match('/^'.$r.'$/'.($this->caseSensitive() ? '' : 'i'),$page)) {
+		if (preg_match('/^'.$r.'$/'.($this->_caseSensitive ? '' : 'i'),$page)) {
 			$paths = explode('/',$page);
 
 			foreach ($pathParams as $key => $path) {
@@ -228,7 +312,6 @@ class Route  {
 
 			} elseif (is_string($this->_controller) && class_exists($this->_controller)) {
 				$this->_controllerRef = new $this->_controller;
-
 			}
 			
 			if ($this->_controllerRef) {
@@ -242,17 +325,9 @@ class Route  {
 		
 		return $this->_controllerRef;
 	}
-
-	public function caseSensitive() {
-		return $this->_caseSensitive;
-	}
-
-	public static function possiblePages($route) {
-		
-	}
 	
-	public function simpleRoute() {
-		return $this->_simpleRoute;
+	public function tipsy() {
+		return $this->_tipsy;
 	}
 }
 
@@ -275,7 +350,27 @@ class Controller {
 	}
 	public function init() {
 		if ($this->closure()) {
-			call_user_func_array($this->_closure, []);
+			$exports = [
+				'db' => null,
+				'route' => $this->route(),
+				'params' => $this->route()->params(),
+				'tipsy' => $this->route()->tipsy()
+			];
+			foreach ($this->route()->tipsy()->models() as $name => $model) {
+				$exports[$name] = $this->route()->tipsy()->model($name);
+			}
+			$args = [];
+		
+			$refFunc = new ReflectionFunction($this->_closure);
+			foreach ($refFunc->getParameters() as $refParameter) {
+				if ($exports[$refParameter->getName()]) {
+					$args[] = $exports[$refParameter->getName()];
+				} else {
+					$args[] = null;
+				}
+			}
+
+			call_user_func_array($this->_closure, $args);
 		}
 	}
 	public function closure() {
@@ -288,6 +383,7 @@ class Controller {
 		}
 		return $this->_route;
 	}
+
 	
 }
 
@@ -296,4 +392,403 @@ class Controller {
  */
 class Scope {
 	
+}
+
+class Db {
+	
+}
+
+class Model {
+	private $_methods;
+	public function json() {
+		return json_encode($this->values());
+	}
+	public function values() {
+		return $this->_values ? $this->_values : get_object_vars($this);
+	}
+	public function addMethod($method, $closure) {
+		$this->_methods[$method] = $closure;
+	}
+	public function __call($method, $args) {
+		if (is_callable($this->_methods[$method])) {
+			return call_user_func_array($this->_methods[$method], $args);
+		} else {
+			throw new Exception('Could not call ' . $method. ' on '.get_class());
+		}
+	}
+}
+
+class Iterator {
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class DBO extends Model {
+	private $_table;
+	private $_id_var;
+	private $_fields;
+	private $_db;
+	private $_properties;
+
+	/**
+	 * Retrieve a field list from the db
+	 *
+	 * Will populate $this->fields based on he columns in the db for the
+	 * current objects table.
+	 *
+	 * @return array
+	 */
+	public function fields() {
+		if ($fields = $this->db()->fields($this->table())) {
+			$this->_fields = $fields;
+		} else {
+
+			$fields = [];
+			$res = $this->db()->query('SHOW COLUMNS FROM `'.$this->table().'`');
+			while ($row = $res->fetch()) {
+				$row->Null = $row->Null == 'YES' ? true : false;
+				$fields[] = $row;
+			}
+			$this->_fields = $fields;
+			$this->db()->fields($this->table(), $fields);
+		}
+		return $this->_fields;
+	}
+
+
+	/**
+	 * Load the object with properties
+	 *
+	 * Passing in an object will populate $this with the current vars of that object
+	 * as public properties. Passing in an int id will load the object with the
+	 * table and key associated with the object.
+	 *
+	 * @param $id object|int
+	 */
+	public function load($id = null) {
+		if (is_object($id)) {
+			$node = $id;
+		} elseif (is_array($id)) {
+			$node = (object)$id;
+		} else {
+			if ($id) {
+				if ($this->_jsonParsing) {
+					$json = @json_decode($id);
+					if (is_object($json)) {
+						$node = $json;
+						$id = $node->{$this->idVar()};
+					}
+				}
+
+				if (!$node) {
+					$query = 'SELECT * FROM `' . $this->table() . '` WHERE `'.$this->idVar().'`="'.$this->db()->escape($id).'" LIMIT 1';
+					$node = $this->db()->get($query)->get(0);
+				}
+
+				if (!$node) {
+					$node = new Model;
+				}
+
+				if (!isset($this->_noId)) {
+					$node->id = $id;
+				}
+			} else {
+				// fill the object with blank properties based on the fields of that table
+				$fields = $this->fields();
+				foreach ($fields as $field) {
+					$this->{$field->Field} = $this->{$field->Field} ? $this->{$field->Field} : '';
+				}
+			}
+		}
+
+		if (isset($node)) {
+			if (isset($node->id)) {
+				$this->id = $node->id;
+			}
+			foreach(get_object_vars($node) as $var => $value) {
+				$this->$var = $value;
+			}
+			if (!isset($this->id) && $this->idVar()) {
+				$id_var = $this->idVar();
+			}
+			if (!isset($this->id) && isset($node->$id_var)) {
+				$this->id = $node->$id_var;
+			}
+		}
+/*
+		if (Cana::config()->cache->object !== false) {
+			Cana::factory($this);
+		}
+*/
+		return $this;
+	}
+
+
+	/**
+	 * Saves an entry in the db. if there is no curerent id it will add one
+	 */
+	public function save($newItem = 0) {
+		$query		= '';
+
+		//If there's an ID, and it's not null, it's an update, not insert
+		if ($newItem) {
+			$this->{$this->idVar()} = $newItem;
+		} elseif (isset($this->_properties[$this->idVar()]) && $this->{$this->idVar()}) {
+			$newItem = 0;
+		} else {
+			$newItem = 1;
+		}
+
+		if ($newItem) {
+			$query = 'INSERT INTO `'.$this->table().'`';
+		} else {
+			$query = 'UPDATE `'.$this->table().'`';
+		}
+
+		$fields = $this->fields();
+
+		$numset = 0;
+
+		foreach ($fields as $field) {
+			if ($this->property($field->Field) !== false) {
+
+				if ($this->{$field->Field} == '' && $field->Null) {
+					$this->{$field->Field} = null;
+				} elseif ($this->{$field->Field} == null && !$field->Null) {
+					$this->{$field->Field} = '';
+				}
+
+				$query .= !$numset ? ' SET' : ',';
+				$query .= ' `'.$field->Field.'`='.(is_null($this->{$field->Field}) ? 'NULL' : ('"'.$this->dbWrite()->escape($this->{$field->Field}).'"'));
+				$numset++;
+			}
+		}
+		if (!$newItem) {
+			$query .= ' WHERE '.$this->idVar().'="'.$this->dbWrite()->escape($this->{$this->idVar()}).'"';
+		}
+
+		$this->dbWrite()->query($query);
+
+		if ($newItem == 1) {
+			$this->{$this->idVar()} = $this->dbWrite()->insertId();
+		}
+		return $this;
+	}
+
+
+	/**
+	 * Delete a row in a table
+	 */
+	public function delete() {
+		if ($this->{$this->idVar()}) {
+			$query = 'DELETE FROM `'.$this->table().'` WHERE `'.$this->idVar().'` = "'.$this->dbWrite()->escape($this->{$this->idVar()}).'"';
+			$this->dbWrite()->query($query);
+		} else {
+			throw new Exception('Cannot delete. No ID was given.<br>');
+		}
+		return $this;
+	}
+
+	public function strip() {
+		$fieldsMeta = $this->fields();
+		foreach ($fieldsMeta as $field) {
+			$fields[] = $field->Field;
+		}
+
+		$vars = get_object_vars($this);
+		foreach ($vars as $key => $var) {
+			if (!in_array($key, $fields) && $key{0} != '_') {
+				unset($this->$key);
+			}
+		}
+		return $this;
+	}
+
+	public function serialize($array) {
+		foreach ($array as $key => $val) {
+			if (array_key_exists($key, $this->properties())) {
+				$this->$key = $val;
+			}
+		}
+		return $this;
+	}
+
+	public function __construct() {
+
+	}
+
+	public static function fromTable($table = null, $id_var = null, $db = null) {
+		$newTable = new Cana_Table($db);
+
+		$newTable->table($table)->idVar($id_var);
+		if ($newTable->table() && $newTable->idVar()) {
+			$newTable->load();
+		}
+		return $newTable;
+	}
+
+	public function db($db = null) {
+		if (!is_null($db)) {
+			$this->_db = $db;
+		} else if (!isset($this->_db)) {
+			$this->_db = c::db();
+		}
+		return $this->_db;
+	}
+
+	public function dbWrite($db = null) {
+		if (!is_null($db)) {
+			$this->_dbWrite = $db;
+		} else if (!isset($this->_dbWrite)) {
+			$this->_dbWrite = c::dbWrite();
+		}
+		return $this->_dbWrite;
+	}
+
+	public function idVar($id_var = null) {
+		if (is_null($id_var)) {
+			return $this->_id_var;
+		} else {
+			$this->_id_var = $id_var;
+			return $this;
+		}
+	}
+
+	public function table($table = null) {
+		if (is_null($table)) {
+			return $this->_table;
+		} else {
+			$this->_table = $table;
+			return $this;
+		}
+	}
+
+	public function properties() {
+		return $this->_properties;
+	}
+
+	public function property($name) {
+		return isset($this->_properties[$name]) ? $this->_properties[$name] : null;
+	}
+
+	public function &__get($name) {
+		if (isset($name{0}) && $name{0} == '_') {
+			return $this->{$name};
+		} else {
+			return $this->_properties[$name];
+		}
+	}
+
+	public function __set($name, $value) {
+		if ($name{0} == '_') {
+			return $this->{$name} = $value;
+		} else {
+			return $this->_properties[$name] = $value;
+		}
+	}
+
+	public function __isset($name) {
+		return $name{0} == '_' ? isset($this->{$name}) : isset($this->_properties[$name]);
+	}
+
+	public static function o() {
+		$classname = get_called_class();
+		foreach (func_get_args() as $arg) {
+			if (is_array($arg)) {
+				foreach ($arg as $item) {
+					$items[] = Cana::factory($classname,$item);
+				}
+			} else {
+				$items[] = Cana::factory($classname,$arg);
+			}
+		}
+
+		if (count($items) == 1) {
+			return array_pop($items);
+		} else {
+			return new Cana_Iterator($items);
+		}
+
+	}
+
+	public function s() {
+		if (func_num_args() == 2) {
+			$this->{func_get_arg(0)} = func_get_arg(1);
+		} elseif (func_num_args() == 1 && is_array(func_get_arg(0))) {
+			foreach (func_get_arg(0) as $key => $value) {
+				$this->{$key} = $value;
+			}
+		}
+		return $this;
+	}
+
+	public static function l($list) {
+		$list = Cana_Model::l2a($list);
+		return self::o($list);
+	}
+
+	public static function c($list) {
+		$list = Cana_Model::l2a($list, ',');
+		return self::o($list);
+	}
+
+	public static function q($query, $db = null) {
+		$db = $db ? $db : Cana::db();
+		$res = $db->query($query);
+		$classname = get_called_class();
+		while ($row = $res->fetch()) {
+			$items[] = new $classname($row);
+		}
+		return new Cana_Iterator($items);
+	}
+
+	public function json() {
+		return json_encode($this->exports());
+	}
+
+	public function exports() {
+		return $this->properties();
+	}
+
+	public function csv() {
+		$csv = $this->properties();
+		if ($this->idVar() != 'id') {
+			unset($csv['id']);
+		}
+		return $csv;
+	}
+
+
+}
+
+
+class File extends Table {
+	private $_id_var = 'id';
+	private $_table = 'file';
+}
+
+class Instanciator {
+	public function o($id) {
+		
+	}
 }
