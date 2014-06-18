@@ -76,7 +76,13 @@ $bs->router()
 	*/
 
 	// get a new instance of the filemodel by id
+
+	
+	$test = $FileModel->create([
+		'uid' => 'bacon'	
+	]);
 	$test = $FileModel->get(1);
+	
 	echo $test->uid;
 	$test->uid = rand(1,2345454);
 	$test->save();
@@ -579,6 +585,15 @@ class DBO extends Model {
 		return $object;
 	}
 	
+	public function create($args = []) {
+		$class = get_called_class();
+		$object = new $class($this->_baseConfig);
+		$object->_tipsy = $this->_tipsy;
+		$object->load($args);
+		$object->save();
+		return $object;
+	}
+	
 	public function dbId() {
 		return $this->{$this->idVar()};
 	}
@@ -632,19 +647,15 @@ class DBO extends Model {
 	/**
 	 * Saves an entry in the db. if there is no curerent id it will add one
 	 */
-	public function save($newItem = 0) {
-		$query		= '';
+	public function save($id = null) {
 
-		//If there's an ID, and it's not null, it's an update, not insert
-		if ($newItem) {
-			$this->{$this->idVar()} = $newItem;
-		} elseif (isset($this->_properties[$this->idVar()]) && $this->{$this->idVar()}) {
-			$newItem = 0;
-		} else {
-			$newItem = 1;
+		$insert = $this->dbId() ? false : true;
+
+		if ($id) {
+			$this->{$this->idVar()} = $id;
 		}
 
-		if ($newItem) {
+		if ($insert) {
 			$query = 'INSERT INTO `'.$this->table().'`';
 		} else {
 			$query = 'UPDATE `'.$this->table().'`';
@@ -656,31 +667,34 @@ class DBO extends Model {
 		$args = [];
 
 		foreach ($fields as $field) {
-			if ($this->property($field->Field) !== false) {
-
-				if ($this->{$field->Field} == '' && $field->Null) {
-					$this->{$field->Field} = null;
-				} elseif ($this->{$field->Field} == null && !$field->Null) {
-					$this->{$field->Field} = '';
-				}
-
-				$query .= !$numset ? ' SET' : ',';
-				$query .= ' `'.$field->Field.'`= ? ';
-				$args[] = is_null($this->{$field->Field}) ? null : $this->{$field->Field};
-				$numset++;
+			if ($this->property($field->Field) === false) {
+				continue;
 			}
+
+			if ($this->{$field->Field} == '' && $field->Null) {
+				$this->{$field->Field} = null;
+			} elseif ($this->{$field->Field} == null && !$field->Null) {
+				$this->{$field->Field} = '';
+			}
+
+			$query .= !$numset ? ' SET' : ',';
+			$query .= ' `'.$field->Field.'`= ? ';
+			$args[] = is_null($this->{$field->Field}) ? null : $this->{$field->Field};
+			$numset++;
+
 		}
 
-		if (!$newItem) {
+		if (!$insert) {
 			$query .= ' WHERE '.$this->idVar().'= ?';
 			$args[] = $this->dbId();
 		}
 
 		$this->db()->query($query, $args);
 
-		if ($newItem == 1) {
-			$this->{$this->idVar()} = $this->db()->insertId();
+		if ($insert) {
+			$this->{$this->idVar()} = $this->db()->db()->lastInsertId();
 		}
+
 		return $this;
 	}
 
