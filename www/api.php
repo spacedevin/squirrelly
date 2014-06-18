@@ -5,12 +5,13 @@
 $bs = new Tipsy;
 
 $bs->config('../config.ini');
+/*
 $bs->config([
 	'db' => [
 		'host' => 'blah'
 	]
-]);
-
+], true);
+*/
 $bs->controller('ViewController', function() {
 	$this->scope->test = 'asd';
 });
@@ -21,6 +22,18 @@ $bs->model('DBO/TestModel', function() {
 			die('testing');
 		}
 	];
+	return $model;
+});
+
+$bs->model('DBO/FileModel', function() {
+	$model = [
+		'test' => function() {
+			die('testing');
+		},
+		'_id_var' => 'id',
+		'_table' => 'file'
+	];
+
 	return $model;
 });
 
@@ -47,8 +60,16 @@ $bs->router()
 	->when('file/:id/edit', function($params) {
 		die('edit - ' . $params['id']);
 	})
-	->when('file/:id', function($TestModel) {
-		$TestModel->test(1);
+	->when('file/:id', function($db, $FileModel) {
+	/*
+	$res = $db->fetch('select * from upload');
+	foreach ($res as $r) {
+		print_r($r);
+	}
+	*/
+	$test = $FileModel->load(1);
+	print_r($test);
+//		$TestModel->test(1);
 exit;
 		$File->fetch(1);
 		$this->model('File')->fetch(1);
@@ -116,20 +137,21 @@ class Tipsy {
 			return null;
 		}
 	}
-	public function config($args) {
+	public function config($args, $recursive = false) {
+		$merge = ($recursive ? 'array_merge_recursive' : 'array_merge');
 		if (is_string($args)) {
 			// assume its a config file
-			$config = parse_ini_file($args);
+			$config = parse_ini_file($args, true);
 			if ($config === false) {
 				throw new Exception('Failed to read config.');
 			} else {
-				$this->_config = array_merge($this->_config, $config);
+				$this->_config = $merge($this->_config, $config);
 			}
 			
 			return $this;
 
 		} elseif (is_array($args)) {
-			$this->_config = array_merge($this->_config, $args);
+			$this->_config = $merge($this->_config, $args);
 			return $this;
 
 		} else {
@@ -170,6 +192,7 @@ class Tipsy {
 				} else {
 					$instance->{$name} = $config;
 				}
+				$instance->_tipsy = $this;
 			}
 
 			return $instance;
@@ -177,6 +200,12 @@ class Tipsy {
 	}
 	public function models() {
 		return $this->_model;
+	}
+	public function db() {
+		if (!isset($this->_db)) {
+			$this->_db = new Db($this->_config['db']);
+		}
+		return $this->_db;
 	}
 }
 
@@ -351,7 +380,7 @@ class Controller {
 	public function init() {
 		if ($this->closure()) {
 			$exports = [
-				'db' => null,
+				'db' => $this->route()->tipsy()->db(),
 				'route' => $this->route(),
 				'params' => $this->route()->params(),
 				'tipsy' => $this->route()->tipsy()
@@ -395,7 +424,47 @@ class Scope {
 }
 
 class Db {
+	private $_db;
+	private $_fields;
+
+	public function __construct($config = []) {
+		$db = $this->connect($config);
+		$this->_db = $db;
+
+	}
+	public function connect($args) {
+		$db = new PDO('mysql:host='.$args['host'].';dbname='.$args['database'].';charset=utf8', $args['user'], $args['pass']);
+		//$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		//$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+		return $db;
+	}
+
+	public function query($query, $args = []) {
+		$stmt = $this->db()->prepare($query);
+		$stmt->execute($args);
+		return $stmt;
+	}
 	
+	public function fetch($query, $args = []) {
+		$stmt = $this->query($query, $args);
+		return $stmt->fetchObject();
+	}
+	
+	public function get($query, $args) {
+		$stmt = $this->query($query, $args);
+		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}
+	
+	public function db() {
+		return $this->_db;
+	}
+	
+	public function fields($table, $fields = null) {
+		if ($table && $fields) {
+			$this->_fields[$table] = $fields;
+		}
+		return $this->_fields[$table];
+	}
 }
 
 class Model {
@@ -449,6 +518,7 @@ class DBO extends Model {
 	private $_fields;
 	private $_db;
 	private $_properties;
+	private $_tipsy;
 
 	/**
 	 * Retrieve a field list from the db
@@ -464,8 +534,8 @@ class DBO extends Model {
 		} else {
 
 			$fields = [];
-			$res = $this->db()->query('SHOW COLUMNS FROM `'.$this->table().'`');
-			while ($row = $res->fetch()) {
+			$rows = $this->db()->get('SHOW COLUMNS FROM ?', [$this->table()]);
+			foreach ($rows as $row) {
 				$row->Null = $row->Null == 'YES' ? true : false;
 				$fields[] = $row;
 			}
@@ -501,8 +571,9 @@ class DBO extends Model {
 				}
 
 				if (!$node) {
-					$query = 'SELECT * FROM `' . $this->table() . '` WHERE `'.$this->idVar().'`="'.$this->db()->escape($id).'" LIMIT 1';
-					$node = $this->db()->get($query)->get(0);
+//					$query = 'SELECT * FROM `' . $this->table() . '` WHERE `'.$this->idVar().'`="'.$this->db()->escape($id).'" LIMIT 1';
+//					$node = $this->db()->get($query)->get(0);
+					$node = $this->db()->get('select * from ? where ?=? limit 1', [$this->table(), $this->idVar(), $id]);
 				}
 
 				if (!$node) {
@@ -587,7 +658,7 @@ class DBO extends Model {
 			$query .= ' WHERE '.$this->idVar().'="'.$this->dbWrite()->escape($this->{$this->idVar()}).'"';
 		}
 
-		$this->dbWrite()->query($query);
+		$this->db()->query($query);
 
 		if ($newItem == 1) {
 			$this->{$this->idVar()} = $this->dbWrite()->insertId();
@@ -633,36 +704,12 @@ class DBO extends Model {
 		return $this;
 	}
 
-	public function __construct() {
-
-	}
-
-	public static function fromTable($table = null, $id_var = null, $db = null) {
-		$newTable = new Cana_Table($db);
-
-		$newTable->table($table)->idVar($id_var);
-		if ($newTable->table() && $newTable->idVar()) {
-			$newTable->load();
-		}
-		return $newTable;
-	}
-
 	public function db($db = null) {
+		return $this->_tipsy->db();
 		if (!is_null($db)) {
 			$this->_db = $db;
-		} else if (!isset($this->_db)) {
-			$this->_db = c::db();
 		}
 		return $this->_db;
-	}
-
-	public function dbWrite($db = null) {
-		if (!is_null($db)) {
-			$this->_dbWrite = $db;
-		} else if (!isset($this->_dbWrite)) {
-			$this->_dbWrite = c::dbWrite();
-		}
-		return $this->_dbWrite;
 	}
 
 	public function idVar($id_var = null) {
