@@ -1,0 +1,36 @@
+
+body {
+	background: #eee;
+	color: #444;
+	font: 12px Ruda;
+}
+
+.logo .mega-octicon {
+	font-size: 90px;
+	text-shadow: -1px -.5px 0 #fff;
+}
+
+.content {
+	margin-top: 100px;
+}
+
+
+.logo .text {
+	display: none;
+}
+
+h2 {
+	padding-top: 10px;
+}
+
+.data {
+	margin-top: 10px;
+	color: #eee;
+	background: #444;
+	padding: 10px 20px 10px 20px;
+	display: inline-block;
+}
+
+.data .instructions {
+	
+}

@@ -6,6 +6,7 @@ Options +Followsymlinks -Indexes
 ReWriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
 ReWriteRule .* - [F] 
 
+RewriteRule ^api/(.+)$                    index.php?__url=$1 [L,QSA]
 RewriteCond %{REQUEST_FILENAME}        !-f
 RewriteCond %{REQUEST_FILENAME}        !-d
 RewriteRule ^(.+)$                    index.html?__url=$1 [L,QSA]
