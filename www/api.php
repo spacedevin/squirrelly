@@ -1,16 +1,49 @@
 <?
 
-$bs = new BeerSquirrel;
+//namespace Tipsy;
+
+$bs = new Tipsy;
 
 $bs->controller('ViewController', function() {
-	die('view');
+	$this->scope->test = 'asd';
 });
+
+
+class LibraryController extends Controller {
+	public function init() {
+		die('library');
+	}
+}
+
+class InstanceController extends Controller {
+	public function init() {
+		die('instance');
+	}
+}
+
+
+$test = new InstanceController;
 
 $bs->router()
 	->when('upload', function() {
 		die('upload');
 	})
-	->when('view', ['controller' => 'ViewController'])
+	->when('file/:id/edit', function() {
+		die('edit - ' . $this->route()->param('id'));
+	})
+	->when('file/:blob', function() {
+		die('file - '.$this->route()->param('blob'));
+	})
+	->when('view', [
+		'controller' => 'ViewController',
+		'view' => 'test.phtml'
+	])
+	->when('instance', [
+		'controller' => $test
+	])
+	->when('library', [
+		'controller' => 'LibraryController'
+	])
 	->otherwise(function() {
 		die('home');
 	});
@@ -18,8 +51,16 @@ $bs->router()
 $bs->start();
 
 
+/**
+ * Tipsy
+ * An MVW PHP Framework
+ */
 
-class BeerSquirrel {
+
+/**
+ * Main class
+ */
+class Tipsy {
 	private $_controllers;
 	
 	public function __construct() {
@@ -28,35 +69,44 @@ class BeerSquirrel {
 
 	public function start() {
 		$this->page = explode('/', $_REQUEST['__url']);
-		$route = $this->router()->match(preg_replace('/[^0-9a-z]/i','',$_REQUEST['__url']));
+
+		$route = $this->router()->match($_REQUEST['__url']);
+		//preg_replace('/[^0-9a-z]/i','',$_REQUEST['__url'])
 
 		$route->controller()->init();
 	}
 	public function router() {
 		if (!isset($this->_router)) {
-			$this->_router = new Router;
+			$this->_router = new Router(['tipsy' => $this]);
 		}
 		return $this->_router;
 	}
 	public function controller($controller, $closure = null) {
-		if ($controller && $closure) {
+		if ($controller && is_callable($closure)) {
 			$this->_controllers[$controler] = new Controller(['closure' => $closure]);
 			return $this;
-		} else {
+		} elseif ($controler) {
 			return $this->_controllers[$controler];
+		} else {
+			return null;
 		}
-
 	}
+
 	
 }
 
 
+/**
+ * Handles definition and resolution of routes to controllers
+ */
 class Router {
 
 	private $_routes;
+	private $_tipsy;
 
-	public function __contstruct() {
+	public function __construct($args = []) {
 		$this->_routes = [];
+		$this->_tipsy = $args['tipsy'];
 	}
 
 	public function when($r, $args = null) {
@@ -70,6 +120,7 @@ class Router {
 			}
 			$route['route'] = $r;
 		}
+		$route['tipsy'] = $this->_tipsy;
 
 		$this->_routes[] = new Route($route);
 		
@@ -78,7 +129,8 @@ class Router {
 	
 	public function otherwise($default) {
 		$this->_default = new Route([
-			'controller' => $default
+			'controller' => $default,
+			'tipsy' => $this->_tipsy
 		]);
 	}
 	
@@ -100,20 +152,25 @@ class Router {
 	}
 	
 	public function defaultRoute() {
-		return $this->_default ? $this->_default : new Route;
+		return $this->_default ? $this->_default : new Route(['tipsy' => $this->_tipsy]);
 	}
 
 }
 
-
+/**
+ * Route object
+ */
 class Route  {
 
-	public function Route($args) {
+	private $_tipsy;
+
+	public function __construct($args) {
 		$this->_controller = $args['controller'];
 		$this->_caseSensitive = $args['caseSensitive'] ? true : false;
 		$this->_view = $args['view'] ? true : false;
 		$this->_route = preg_replace('/^\/?(.*?)\/?$/i','\\1',$args['route']);
-		$this->_simpleRoute = preg_replace('/:[a-z]+(\/?)/i','',$this->routez());
+		$this->_simpleRoute = preg_replace('/:[a-z]+(\/?)/i','',$this->_route);
+		$this->_tipsy = $args['tipsy'];
 	}
 	
 	public function match($page) {
@@ -121,7 +178,7 @@ class Route  {
 		$this->_routeParams = [];
 		
 		$pathParams = [];
-		$paths = explode('/',$this->routez());
+		$paths = explode('/',$this->_route);
 
 		foreach ($paths as $key => $path) {
 			if (strpos($path,':') === 0) {
@@ -129,14 +186,7 @@ class Route  {
 			}
 		}
 
-		/*
-		$r = preg_replace_callback('/:[a-z]+/i',function($matches) {
-			$this->_routeMatch[] = substr($matches[0],1);
-			return '.*';
-		}, $this->route());
-		*/
-
-		$r = preg_replace('/:[a-z]+/i','.*',$this->routez());
+		$r = preg_replace('/:[a-z]+/i','.*',$this->_route);
 		$r = preg_replace('/\//','\/',$r);
 
 		if (preg_match('/^'.$r.'$/'.($this->caseSensitive() ? '' : 'i'),$page)) {
@@ -150,7 +200,7 @@ class Route  {
 		}
 		return false;
 	}
-	
+
 	public function param($param) {
 		return $this->_routeParams[$param];
 	}
@@ -162,7 +212,9 @@ class Route  {
 	public function controller() {
 
 		if (!isset($this->_controllerRef)) {
+
 			if (is_callable($this->_controller)) {
+
 				$controller = new Controller([
 					'closure' => $this->_controller
 				]);
@@ -171,45 +223,21 @@ class Route  {
 			} elseif(is_object($this->_controller)) {
 				$this->_controllerRef = $this->_controller;
 
-			} elseif (is_string($this->_controller)) {
-				
-			} else {
+			} elseif (is_string($this->_controller) && $this->_tipsy->controller($this->_controller)) {
+				$this->_controllerRef = $this->_tipsy->controller($this->_controller);
 
-				$name = $this->_controller ? str_replace('_','/',$this->_controller) : $this->_simpleRoute;
+			} elseif (is_string($this->_controller) && class_exists($this->_controller)) {
+				$this->_controllerRef = new $this->_controller;
 
-				// include the file
-				if (!Cana::app()->includeFile($name)) {
-					return;
-				}
-
-				// try to guess the controller based on the route name
-				if (!$this->_controller) {
-					$pageClass = explode('/',$name);
-
-					foreach ($pageClass as $posiblePage) {
-						$posiblePages[] = 'Controller'.$fullPageNext.'_'.str_replace('.','_',$posiblePage);
-						$fullPageNext .= '_'.$posiblePage;
-					}
-					$posiblePages = array_reverse($posiblePages);
-
-					foreach ($posiblePages as $posiblePage) {
-						if (class_exists($posiblePage, false)) {
-							$controller = new $posiblePage($this->params());
-
-							if (method_exists($posiblePage, 'init')) {
-								$this->_controllerRef = $controller;
-								break;
-							}
-						}
-					}
-				}
-
-
-				if (!$this->_controllerRef) {
-					die('no controller');
-					//Cana::displayPage(Cana::config()->defaults->errorPage ? Cana::config()->defaults->errorPage : Cana::config()->defaults->page);
-				}
 			}
+			
+			if ($this->_controllerRef) {
+				$this->_controllerRef->route($this);
+			}
+		}
+		
+		if (!$this->_controllerRef) {
+			die('No controller attached to route.');
 		}
 		
 		return $this->_controllerRef;
@@ -218,11 +246,7 @@ class Route  {
 	public function caseSensitive() {
 		return $this->_caseSensitive;
 	}
-	
-	public function routez() {
-		return $this->_route;
-	}
-	
+
 	public static function possiblePages($route) {
 		
 	}
@@ -232,13 +256,44 @@ class Route  {
 	}
 }
 
-
+/**
+ * Controller object
+ */
 class Controller {
-	public function __contstruct($params = []) {
-		
+	private $_closure;
+	private $_route;
+	public $scope;
+
+	public function __construct($args = []) {
+		if (isset($args['closure'])) {
+			$this->_closure = Closure::bind($args['closure'], $this, get_class());
+		}
+		if (isset($args['route'])) {
+			$this->_route = $args['route'];
+		}
+		$this->scope = new Scope;
 	}
 	public function init() {
-		
+		if ($this->closure()) {
+			call_user_func_array($this->_closure, []);
+		}
 	}
+	public function closure() {
+		return $this->_closure;
+	}
+	
+	public function route($route = null) {
+		if ($route) {
+			$this->_route = $route;
+		}
+		return $this->_route;
+	}
+	
+}
+
+/**
+ * Scope object
+ */
+class Scope {
 	
 }
