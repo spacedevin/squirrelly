@@ -18,7 +18,7 @@ $bs->controller('ViewController', function() {
 
 $bs->model('DBO/TestModel', function() {
 	$model = [
-		'test' => function() {
+		'testmodel' => function() {
 			die('testing');
 		}
 	];
@@ -27,12 +27,19 @@ $bs->model('DBO/TestModel', function() {
 
 $bs->model('DBO/FileModel', function() {
 	$model = [
-		'test' => function() {
+		'filemodel' => function() {
 			die('testing');
 		},
-		'_id_var' => 'id',
-		'_table' => 'file'
+		/*
+		'construct' => function() {
+			$this->_id_var = 'id';
+			$this->_table = 'file';
+		},
+		*/
+		'id' => 'id',
+		'table' => 'upload'
 	];
+
 
 	return $model;
 });
@@ -67,9 +74,14 @@ $bs->router()
 		print_r($r);
 	}
 	*/
-	$test = $FileModel->load(1);
-	print_r($test);
-//		$TestModel->test(1);
+
+	// get a new instance of the filemodel by id
+	$test = $FileModel->get(1);
+	echo $test->uid;
+	$test->uid = rand(1,2345454);
+	$test->save();
+	echo $test->uid;
+
 exit;
 		$File->fetch(1);
 		$this->model('File')->fetch(1);
@@ -185,7 +197,8 @@ class Tipsy {
 			return $this;
 
 		} else {
-			$instance = $this->_model[$model]['reflection']->newInstance();
+			$instance = $this->_model[$model]['reflection']->newInstance($this->_model[$model]['config']);
+
 			foreach ($this->_model[$model]['config'] as $name => $config) {
 				if (is_callable($config)) {
 					$instance->addMethod($name, $config);
@@ -349,7 +362,7 @@ class Route  {
 		}
 		
 		if (!$this->_controllerRef) {
-			die('No controller attached to route.');
+			throw new Exception('No controller attached to route.');
 		}
 		
 		return $this->_controllerRef;
@@ -385,6 +398,7 @@ class Controller {
 				'params' => $this->route()->params(),
 				'tipsy' => $this->route()->tipsy()
 			];
+
 			foreach ($this->route()->tipsy()->models() as $name => $model) {
 				$exports[$name] = $this->route()->tipsy()->model($name);
 			}
@@ -450,9 +464,9 @@ class Db {
 		return $stmt->fetchObject();
 	}
 	
-	public function get($query, $args) {
+	public function get($query, $args = [], $type = 'object') {
 		$stmt = $this->query($query, $args);
-		return $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $stmt->fetchAll($type == 'object' ? PDO::FETCH_OBJ : PDO::FETCH_ASSOC);
 	}
 	
 	public function db() {
@@ -519,6 +533,18 @@ class DBO extends Model {
 	private $_db;
 	private $_properties;
 	private $_tipsy;
+	private $_baseConfig;
+	
+	public function __construct($args = []) {
+		if ($args['id']) {
+			$this->_id_var = $args['id'];
+		}
+		if ($args['table']) {
+			$this->_table = $args['table'];
+		}
+		$this->_baseConfig = $args;
+	}
+
 
 	/**
 	 * Retrieve a field list from the db
@@ -534,7 +560,7 @@ class DBO extends Model {
 		} else {
 
 			$fields = [];
-			$rows = $this->db()->get('SHOW COLUMNS FROM ?', [$this->table()]);
+			$rows = $this->db()->get('SHOW COLUMNS FROM `'.$this->table().'`');
 			foreach ($rows as $row) {
 				$row->Null = $row->Null == 'YES' ? true : false;
 				$fields[] = $row;
@@ -543,6 +569,18 @@ class DBO extends Model {
 			$this->db()->fields($this->table(), $fields);
 		}
 		return $this->_fields;
+	}
+	
+	public function get($id) {
+		$class = get_called_class();
+		$object = new $class($this->_baseConfig);
+		$object->_tipsy = $this->_tipsy;
+		$object->load($id);
+		return $object;
+	}
+	
+	public function dbId() {
+		return $this->{$this->idVar()};
 	}
 
 
@@ -556,56 +594,32 @@ class DBO extends Model {
 	 * @param $id object|int
 	 */
 	public function load($id = null) {
+		// fill the object with blank properties based on the fields of that table
+		$fields = $this->fields();
+		foreach ($fields as $field) {
+			$this->{$field->Field} = $this->{$field->Field} ? $this->{$field->Field} : '';
+		}
+		
 		if (is_object($id)) {
 			$node = $id;
 		} elseif (is_array($id)) {
 			$node = (object)$id;
-		} else {
-			if ($id) {
-				if ($this->_jsonParsing) {
-					$json = @json_decode($id);
-					if (is_object($json)) {
-						$node = $json;
-						$id = $node->{$this->idVar()};
-					}
-				}
-
-				if (!$node) {
-//					$query = 'SELECT * FROM `' . $this->table() . '` WHERE `'.$this->idVar().'`="'.$this->db()->escape($id).'" LIMIT 1';
-//					$node = $this->db()->get($query)->get(0);
-					$node = $this->db()->get('select * from ? where ?=? limit 1', [$this->table(), $this->idVar(), $id]);
-				}
-
-				if (!$node) {
-					$node = new Model;
-				}
-
-				if (!isset($this->_noId)) {
-					$node->id = $id;
-				}
-			} else {
-				// fill the object with blank properties based on the fields of that table
-				$fields = $this->fields();
-				foreach ($fields as $field) {
-					$this->{$field->Field} = $this->{$field->Field} ? $this->{$field->Field} : '';
-				}
+		} elseif ($id) {
+			if (!$node) {
+				$node = (object)$this->db()->get('select * from `' . $this->table() . '` where `'.$this->idVar().'` = ? limit 1', [$id])[0];
 			}
+		}
+
+		if (!$node) {
+			$node = new Model;
 		}
 
 		if (isset($node)) {
-			if (isset($node->id)) {
-				$this->id = $node->id;
-			}
 			foreach(get_object_vars($node) as $var => $value) {
 				$this->$var = $value;
 			}
-			if (!isset($this->id) && $this->idVar()) {
-				$id_var = $this->idVar();
-			}
-			if (!isset($this->id) && isset($node->$id_var)) {
-				$this->id = $node->$id_var;
-			}
 		}
+
 /*
 		if (Cana::config()->cache->object !== false) {
 			Cana::factory($this);
@@ -639,6 +653,7 @@ class DBO extends Model {
 		$fields = $this->fields();
 
 		$numset = 0;
+		$args = [];
 
 		foreach ($fields as $field) {
 			if ($this->property($field->Field) !== false) {
@@ -650,18 +665,21 @@ class DBO extends Model {
 				}
 
 				$query .= !$numset ? ' SET' : ',';
-				$query .= ' `'.$field->Field.'`='.(is_null($this->{$field->Field}) ? 'NULL' : ('"'.$this->dbWrite()->escape($this->{$field->Field}).'"'));
+				$query .= ' `'.$field->Field.'`= ? ';
+				$args[] = is_null($this->{$field->Field}) ? null : $this->{$field->Field};
 				$numset++;
 			}
 		}
+
 		if (!$newItem) {
-			$query .= ' WHERE '.$this->idVar().'="'.$this->dbWrite()->escape($this->{$this->idVar()}).'"';
+			$query .= ' WHERE '.$this->idVar().'= ?';
+			$args[] = $this->dbId();
 		}
 
-		$this->db()->query($query);
+		$this->db()->query($query, $args);
 
 		if ($newItem == 1) {
-			$this->{$this->idVar()} = $this->dbWrite()->insertId();
+			$this->{$this->idVar()} = $this->db()->insertId();
 		}
 		return $this;
 	}
@@ -706,10 +724,6 @@ class DBO extends Model {
 
 	public function db($db = null) {
 		return $this->_tipsy->db();
-		if (!is_null($db)) {
-			$this->_db = $db;
-		}
-		return $this->_db;
 	}
 
 	public function idVar($id_var = null) {
