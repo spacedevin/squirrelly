@@ -87,6 +87,8 @@ $bs->router()
 	$test->uid = rand(1,2345454);
 	$test->save();
 	echo $test->uid;
+	
+	$FileModel->q('select * from upload where uid=?','bacon')->delete();
 
 exit;
 		$File->fetch(1);
@@ -703,11 +705,10 @@ class DBO extends Model {
 	 * Delete a row in a table
 	 */
 	public function delete() {
-		if ($this->{$this->idVar()}) {
-			$query = 'DELETE FROM `'.$this->table().'` WHERE `'.$this->idVar().'` = "'.$this->dbWrite()->escape($this->{$this->idVar()}).'"';
-			$this->dbWrite()->query($query);
+		if ($this->dbId()) {
+			$this->db()->query('DELETE FROM `'.$this->table().'` WHERE `'.$this->idVar().'` = ?', [$this->dbId()]);
 		} else {
-			throw new Exception('Cannot delete. No ID was given.<br>');
+			throw new Exception('Cannot delete. No ID was given.');
 		}
 		return $this;
 	}
@@ -827,18 +828,14 @@ class DBO extends Model {
 		return self::o($list);
 	}
 
-	public static function q($query, $db = null) {
-		$db = $db ? $db : Cana::db();
+	public static function q($query, $args = []) {
+
 		$res = $db->query($query);
 		$classname = get_called_class();
 		while ($row = $res->fetch()) {
 			$items[] = new $classname($row);
 		}
 		return new Cana_Iterator($items);
-	}
-
-	public function json() {
-		return json_encode($this->exports());
 	}
 
 	public function exports() {
