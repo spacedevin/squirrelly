@@ -35,7 +35,8 @@ angular.module('BeerSquirrel', ['ngRoute'])
 				elem.bind('paste', function(e) {
 
 					var uploadPaste = function(paste) {
-						if (paste.data.length > 1048576) {
+						// 2MB
+						if (paste.data.length > 2097152) {
 							
 						}
 						console.log(paste);
