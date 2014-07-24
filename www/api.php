@@ -1,7 +1,7 @@
 <?
 
 
-require_once('../Tipsy.php');
+require_once('../Tipsy/Tipsy.php');
 
 $bs = new Tipsy\Tipsy;
 
