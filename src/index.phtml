@@ -29,7 +29,7 @@
 	<div ng-view></div>
 
 	<div class="footer">
-		Rules: No porn or weird shit please. Uploads are deleted every week.
+		Rules: No porn or weird shit. Uploads are deleted every week.
 	</div>
 </div>
 </center>
@@ -58,12 +58,17 @@
 			</div>
 		</div>
 		
-		<div class="text-input-wrap">
+		<div class="text-input-wrap" ng-if="isMobile">
 			<textarea class="text-input" placeholder="Paste here to upload text"></textarea>
 		</div>
 
 		<div class="tip">
-			Pro Tip: To copy a small screenshot in OSX, press <b>Shift+Ctrl+Cmd+4</b> and select the area you want to screenshot. Or press space and click the window you want.
+			<span ng-switch="OS">
+				<span ng-switch-when="mac">Pro Tip: To copy a small screenshot in OSX, press <b>Shift+Ctrl+Cmd+4</b> and select the area you want to screenshot. Or press space and click the window you want.</span>
+				<span ng-switch-when="win">Pro Tip: To copy a window screenshot in Windows, press <b>Alt+PrtScn</b>.</span>
+				<span ng-switch-default></span>
+			</span>
+			
 		</div>
 	</div>
 </script>

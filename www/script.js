@@ -22,6 +22,15 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 	.run(function($rootScope, $location) {
 		$rootScope.isMobile = /ipad|iphone|ipod|android/i.test(navigator.userAgent.toLowerCase());
 		
+		if (/Macintosh/i.test(navigator.userAgent.toLowerCase())) {
+			$rootScope.OS = 'mac';
+		} else if (/Windows/i.test(navigator.userAgent.toLowerCase())) {
+			$rootScope.OS = 'win';
+		} else {
+			$rootScope.OS = null;
+		}
+
+		
 		$rootScope.$on('uploaded', function(e, f) {
 			$rootScope.$apply(function($scope) {
 				$scope.error = null;
