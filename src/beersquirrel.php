@@ -1,8 +1,9 @@
 <?
 
 
-//require_once('../Tipsy/Tipsy.php');
-require_once('/Users/arzynik/Sites/Tipsy/src/Tipsy/Tipsy.php');
+
+require_once '/Users/arzynik/Sites/Tipsy/src/Tipsy/Tipsy.php';
+//require_once __DIR__ . '/../vendor/autoload.php';
 
 $bs = new Tipsy\Tipsy;
 

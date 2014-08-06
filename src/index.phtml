@@ -29,7 +29,7 @@
 	<div ng-view></div>
 
 	<div class="footer">
-		Rules: No porn or weird shit please.<br>Uploads are deleted every week.
+		Rules: No porn or weird shit please. Uploads are deleted every week.
 	</div>
 </div>
 </center>
@@ -41,10 +41,10 @@
 		<div class="data">
 			<p class="instructions">Paste something from your clipboard using <b>Cmd+V</b></p>
 		</div>
-	
-		<p class="tip">
-			Tip: To take a small screenshot in OSX, press <b>Shift+Ctrl+Cmd+4</b> and select the area you want to screenshot. Or press space and click the window you want.
-		</p>
+
+		<div class="tip">
+			Pro Tip: To copy a small screenshot in OSX, press <b>Shift+Ctrl+Cmd+4</b> and select the area you want to screenshot. Or press space and click the window you want.
+		</div>
 	</div>
 </script>
 
@@ -53,7 +53,7 @@
 		<div ng-show="file.type == 'image'">
 			<img src="/file/{{file.uid}}" ng-if="file.uid">
 		</div>
-		
+
 		<div ng-show="file.type == 'text'">
 			<pre class="upload-content">{{file.content}}</pre>
 		</div>

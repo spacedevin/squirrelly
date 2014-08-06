@@ -8,12 +8,12 @@ body {
 }
 
 .logo .mega-octicon {
-	font-size: 90px;
+	font-size: 8em;
 	text-shadow: -1px -.5px 0 #fff;
 }
 
 .content {
-	margin-top: 5em;
+	margin-top: 4em;
 	box-sizing: border-box;
 }
 
@@ -35,22 +35,21 @@ h2 {
 }
 
 .data {
-	margin-top: 1.4em;
+	margin-top: 2.4em;
 	color: #eee;
 	background: #444;
-	padding: 1.4em 2em 1.3em 2em;
+	padding: 2em 2.2em 1.8em 2.2em;
 	display: inline-block;
-	font-size: 1.2em;
 }
 
 .instructions {
-	
+	font-size: 1.2em;	
 }
 
 .tip {
-	margin-top: 5em;
+	margin-top: 4em;
 	line-height: 1.7em;
-	font-size: 12px;
+	font-size: 1.2em;
 }
 
 .logo a {
@@ -62,6 +61,7 @@ h2 {
 	margin-top: 3em;
 	font-size: 1em;
 	color: #888;
+	line-height: 1.7em;
 }
 
 .upload {
@@ -79,7 +79,15 @@ b {
 }
 
 @media (max-width: 400px) {
-	.wrapper {
+	.content {
 		width: 100%;
+		padding-left: 1em;
+		padding-right: 1em;
+	}
+	.home {
+		width: 100%;
+	}
+	.logo .mega-octicon {
+		font-size: 7em;
 	}
 }
