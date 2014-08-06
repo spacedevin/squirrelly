@@ -1,0 +1,71 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "b5791fb9b2636ec3e400f973673f53fd",
+    "packages": [
+        {
+            "name": "arzynik/tipsy",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/arzynik/Tipsy.git",
+                "reference": "e3b7d8cd4cb1218c149800eed611bc091d3dc563"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arzynik/Tipsy/zipball/e3b7d8cd4cb1218c149800eed611bc091d3dc563",
+                "reference": "e3b7d8cd4cb1218c149800eed611bc091d3dc563",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Tipsy": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Devin Smith",
+                    "email": "devin@tipsy.la",
+                    "homepage": "http://devin.la",
+                    "role": "Developer"
+                }
+            ],
+            "description": "An MVW PHP framework",
+            "keywords": [
+                "framework",
+                "mvc",
+                "mvw",
+                "php"
+            ],
+            "time": "2014-08-06 04:07:20"
+        }
+    ],
+    "packages-dev": [
+
+    ],
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "arzynik/tipsy": 20
+    },
+    "prefer-stable": false,
+    "platform": {
+        "php": ">=5.4.0"
+    },
+    "platform-dev": [
+
+    ]
+}
