@@ -12,6 +12,7 @@ body {
 
 .content {
 	margin-top: 100px;
+	width: 400px;
 }
 
 
@@ -33,4 +34,9 @@ h2 {
 
 .data .instructions {
 	
+}
+
+.tip {
+	margin-top: 5em;
+	line-height: 1.7em;
 }

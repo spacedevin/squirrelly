@@ -8,10 +8,10 @@ angular.module('BeerSquirrel', ['ngRoute'])
 				controller: 'Home',
 				templateUrl: 'home.html'
 			})
-			.when('/beer', {
-				action: 'beer',
-				controller: 'Beer',
-				templateUrl: 'beer.html'
+			.when('/view/:id', {
+				action: 'view',
+				controller: 'View',
+				templateUrl: 'view.html'
 			})
 			.otherwise({
 				redirectTo: '/'
@@ -20,21 +20,32 @@ angular.module('BeerSquirrel', ['ngRoute'])
 		$locationProvider.html5Mode(true);
 	})
 
-	.controller('Home', ['$scope', function ($scope) {
-		$scope.greetMe = 'home';
-	}])
+	.controller('Home', function ($scope) {
+		
+	})
 
-	.controller('Beer', ['$scope', function ($scope) {
-		$scope.greetMe = 'beer';
-	}])
+	.controller( 'View', function ($scope, $http, $routeParams) {
+		$http.get('/get/' + $routeParams.id).success(function(file) {
+			$scope.file = file;
+		});
+	})
 
-	.directive('uploadPaste', function(){ 
+	.directive('uploadPaste', function($http, $location){ 
 		return {
 			restrict: 'A',
 			link: function(scope, elem, attr, ctrl) {
 				elem.bind('paste', function(e) {
 
 					var uploadPaste = function(paste) {
+
+						$http({
+							method: 'POST',
+							url: 'upload',
+							data: paste
+						}).success(function(data) {
+							$location.path('/view/' + data.uid);
+							console.log(data);
+						});
 						// 2MB
 						if (paste.data.length > 2097152) {
 							
@@ -47,8 +58,10 @@ angular.module('BeerSquirrel', ['ngRoute'])
 					};
 		
 					if (/text\/html/.test(e.clipboardData.types)) {
-						paste.data = e.clipboardData.getData('text/html');
-						paste.type = 'html';
+						//paste.data = e.clipboardData.getData('text/html');
+						//paste.type = 'html';
+						paste.data = e.clipboardData.getData('text/plain');
+						paste.type = 'txt';
 		
 					} else if (/text\/plain/.test(e.clipboardData.types)) {
 						paste.data = e.clipboardData.getData('text/plain');
