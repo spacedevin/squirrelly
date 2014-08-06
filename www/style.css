@@ -42,6 +42,11 @@ h2 {
 	display: inline-block;
 }
 
+.data.error {
+	background: #e83939;
+	color: #fff;
+}
+
 .instructions {
 	font-size: 1.2em;	
 }
@@ -90,4 +95,26 @@ b {
 	.logo .mega-octicon {
 		font-size: 7em;
 	}
+}
+
+
+.file-upload {
+	border: 2px solid red;
+	border-radius: 0;
+	padding: 2em;
+	width: 28em;
+	position: absolute;
+	margin: 0;
+	margin-left: -14em;
+	margin-top: -2.4em;
+	box-sizing: border-box;
+	opacity: 0;
+
+}
+.file-upload::-webkit-file-upload-button {
+	visibility: hidden;
+}
+
+.image {
+	max-width: 80%;
 }

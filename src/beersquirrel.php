@@ -23,7 +23,7 @@ $bs->model('Tipsy\DBO/Upload', [
 			'type' => $this->type,
 			'ext' => $this->ext
 		];
-		
+
 		if ($this->type == 'text') {
 			$ret['content'] = file_get_contents($this->path());
 		}
@@ -87,8 +87,8 @@ $bs->router()
 		
 		if ($Request->type == 'image' && substr($Request->data, 0, 11) == 'data:image/') {
 			// image
-			$ext = preg_replace('/^data:image\/([a-z]{3});base64,(.*)$/','\\1',$Request->data);
-			$data = preg_replace('/^data:image\/([a-z]{3});base64,(.*)$/','\\2',$Request->data);
+			$ext = preg_replace('/^data:image\/([a-z]{3,4});base64,(.*)$/','\\1',$Request->data);
+			$data = preg_replace('/^data:image\/([a-z]{3,4});base64,(.*)$/','\\2',$Request->data);
 
 			switch ($ext) {
 				case 'png':
@@ -98,6 +98,9 @@ $bs->router()
 					$type = 'image';
 					$data = base64_decode($data);
 					break;
+				default:
+					http_response_code(500);
+					exit;
 			}
 			
 			if ($ext == 'jpeg') {
