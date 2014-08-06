@@ -106,15 +106,6 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		});
 	})
 	
-	.directive('uploadTap', function($http, $location, UploadService) {
-		return {
-			restrict: 'A',
-			link: function(scope, elem, attr, ctrl) {
-				console.log(angular.element('body')).trigger('click');
-			}
-		};
-	})
-	
 	.directive('uploadField', function($http, $location, UploadService) {
 		return {
 			restrict: 'A',

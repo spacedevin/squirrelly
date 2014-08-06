@@ -107,7 +107,7 @@ $bs->router()
 				$ext = 'jpg';
 			}
 
-		} else {
+		} elseif ($Request->type == 'txt') {
 			// text
 			$type = 'text';
 			$ext = 'txt';

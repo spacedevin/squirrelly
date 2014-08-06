@@ -39,7 +39,31 @@ h2 {
 	color: #eee;
 	background: #444;
 	padding: 2em 2.2em 1.8em 2.2em;
-	display: inline-block;
+}
+
+.text-input-wrap {
+	margin-top: 1em;
+	border: 3px solid #444;
+}
+
+.text-input {
+	background: transparent;
+	height: 3.9em;
+	width: 100%;
+	box-sizing: border-box;
+	border: none;
+	text-align: center;
+	font-family: Ruda, Open Sans, Helvetica, sanf-serif;
+	font-size: 1.2em;
+	padding-top: 1.5em;
+}
+
+::-webkit-input-placeholder {
+	color: #888;
+}
+
+.data, .text-input-wrap {
+	min-width: 80%;
 }
 
 .data.error {
