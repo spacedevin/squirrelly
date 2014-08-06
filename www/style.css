@@ -1,8 +1,10 @@
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+
 
 body {
 	background: #eee;
 	color: #444;
-	font: 12px Ruda;
+	font: 10px Ruda, Open Sans, Helvetica, sanf-serif;
 }
 
 .logo .mega-octicon {
@@ -11,10 +13,16 @@ body {
 }
 
 .content {
-	margin-top: 100px;
-	width: 400px;
+	margin-top: 5em;
+	box-sizing: border-box;
 }
 
+.home {
+	width: 400px;
+}
+.logo {
+	margin-bottom: 3em;
+}
 
 .logo .text {
 	display: none;
@@ -22,21 +30,56 @@ body {
 
 h2 {
 	padding-top: 10px;
+	font-size: 1.7em;
+	font-weight: bold;
 }
 
 .data {
-	margin-top: 10px;
+	margin-top: 1.4em;
 	color: #eee;
 	background: #444;
-	padding: 10px 20px 10px 20px;
+	padding: 1.4em 2em 1.3em 2em;
 	display: inline-block;
+	font-size: 1.2em;
 }
 
-.data .instructions {
+.instructions {
 	
 }
 
 .tip {
 	margin-top: 5em;
 	line-height: 1.7em;
+	font-size: 12px;
+}
+
+.logo a {
+	color: #444;
+	text-decoration: none;
+}
+
+.footer {
+	margin-top: 3em;
+	font-size: 1em;
+	color: #888;
+}
+
+.upload {
+	margin-top: 4em;
+}
+
+.upload-content {
+	width: 500px;
+	padding: .7em;
+	background: #fff;
+	text-align: left;
+}
+b {
+	font-weight: bold;
+}
+
+@media (max-width: 400px) {
+	.wrapper {
+		width: 100%;
+	}
 }

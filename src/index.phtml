@@ -2,6 +2,7 @@
 <html ng-app="BeerSquirrel">
 <head>
 <title>Beer Squirrel</title>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
 <link rel="shortcut icon" href="/icon.png">
 
 <meta property="og:image" content="/icon.png">
@@ -20,42 +21,49 @@
 <div class="content">
 	<div class="logo">
 		<h1>
-			<span class="mega-octicon octicon-beer"></span>&nbsp;<span class="mega-octicon octicon-squirrel"></span>
+			<a href="/"><span class="mega-octicon octicon-beer"></span>&nbsp;<span class="mega-octicon octicon-squirrel"></span></a>
 			<span class="text">Beer Squirrel</span>
 		</h1>
 	</div>
 
 	<div ng-view></div>
 
+	<div class="footer">
+		Rules: No porn or weird shit please.<br>Uploads are deleted every week.
+	</div>
 </div>
 </center>
 
 <script type="text/ng-template" id="home.html">
-	<h2>Paste &amp; share images or text</h2>
-	
-	<div class="data">
-		<p class="instructions">Paste something from your clipboard using <b>Cmd+V</b></p>
-	</div>
+	<div class="home">
+		<h2>Paste &amp; share images or text</h2>
 
-	<p class="tip">
-		Tip: To take a small screenshot in OSX, press <b>Shift+Ctrl+Cmd+4</b> and select the area you want to screenshot. Or press space and click the window you want.
-	</p>
+		<div class="data">
+			<p class="instructions">Paste something from your clipboard using <b>Cmd+V</b></p>
+		</div>
+	
+		<p class="tip">
+			Tip: To take a small screenshot in OSX, press <b>Shift+Ctrl+Cmd+4</b> and select the area you want to screenshot. Or press space and click the window you want.
+		</p>
+	</div>
 </script>
 
 <script type="text/ng-template" id="view.html">
-	<div ng-show="file.type == 'image'">
-		<img src="/file/{{file.uid}}">
-	</div>
-	
-	<div ng-show="file.type == 'text'">
-		{{file.text}}
+	<div class="upload">
+		<div ng-show="file.type == 'image'">
+			<img src="/file/{{file.uid}}" ng-if="file.uid">
+		</div>
+		
+		<div ng-show="file.type == 'text'">
+			<pre class="upload-content">{{file.content}}</pre>
+		</div>
 	</div>
 
 </script>
 
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.13/angular.min.js"></script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.13/angular-route.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular-route.js"></script>
 
 <script type="text/javascript" src="/script.js"></script>
 </body>

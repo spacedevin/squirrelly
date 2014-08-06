@@ -1,0 +1,19 @@
+{
+    "name": "arzynik/beersquirrel",
+    "authors": [
+        {
+            "name": "Devin",
+            "email": "devin@beersquirrel.xyz"
+        }
+    ],
+	"minimum-stability": "stable",
+	"require": {
+		"php": ">=5.4.0",
+		"arzynik/tipsy": "dev-master"
+	},
+	"autoload": {
+		"psr-0": {
+			"Tipsy": "src/"
+		}
+	}
+}

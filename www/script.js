@@ -40,7 +40,7 @@ angular.module('BeerSquirrel', ['ngRoute'])
 
 						$http({
 							method: 'POST',
-							url: 'upload',
+							url: '/upload',
 							data: paste
 						}).success(function(data) {
 							$location.path('/view/' + data.uid);

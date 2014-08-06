@@ -24,7 +24,7 @@ $bs->model('Tipsy\DBO/Upload', [
 		];
 		
 		if ($this->type == 'text') {
-			$ret['content'] = readfile($this->path());
+			$ret['content'] = file_get_contents($this->path());
 		}
 		
 		return $ret;
