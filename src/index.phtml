@@ -4,6 +4,9 @@
 <title>Beer Squirrel</title>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
 <link rel="shortcut icon" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <meta property="og:image" content="/icon.png">
 <meta property="og:title" content="Beer Squirrel">
@@ -68,13 +71,15 @@
 				<span ng-switch-when="win">Pro tip: To copy a window screenshot in Windows, press <b>Alt+PrtScn</b>.</span>
 				<span ng-switch-default></span>
 			</span>
-			
 		</div>
 	</div>
 </script>
 
 <script type="text/ng-template" id="view.html">
 	<div class="upload">
+
+		<input type="text" class="upload-link" ng-model="url" id="upload-link">
+	
 		<div ng-if="file.type == 'image'">
 			<img src="/file/{{file.uid}}" ng-if="file.uid" class="image">
 		</div>

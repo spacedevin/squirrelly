@@ -30,12 +30,11 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			$rootScope.OS = null;
 		}
 
-		
 		$rootScope.$on('uploaded', function(e, f) {
 			$rootScope.$apply(function($scope) {
 				$scope.error = null;
 			});
-			$location.path('/view/' + f.uid);			
+			$location.path('/view/' + f.uid);	
 		});
 		
 		$rootScope.$on('large-file', function() {
@@ -109,9 +108,16 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		
 	})
 
-	.controller( 'View', function ($scope, $http, $routeParams, UploadService) {
+	.controller( 'View', function ($scope, $http, $routeParams, UploadService, $location) {
 		UploadService.get($routeParams.id, function(file) {
 			$scope.file = file;
+			$scope.url = $location.absUrl();
+
+			setTimeout(function() {
+				var el = document.getElementById('upload-link');
+				el.setSelectionRange(0, el.value.length)
+				el.focus();
+			});
 		});
 	})
 	
