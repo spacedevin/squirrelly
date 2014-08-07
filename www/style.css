@@ -14,6 +14,10 @@ html,body {
 	-webkit-tap-highlight-color: transparent;
 }
 
+a {
+	color: #888;
+}
+
 ::selection {
 	background: #e1574c;
 	color: #fff;
@@ -29,7 +33,6 @@ html,body {
 }
 
 .content {
-	margin-top: 4em;
 	box-sizing: border-box;
 	padding-left: 1em;
 	padding-right: 1em;
@@ -39,6 +42,7 @@ html,body {
 	width: 400px;
 }
 .logo {
+	margin-top: 4.3em;
 	margin-bottom: 3em;
 }
 
@@ -179,4 +183,14 @@ b {
 input {
 	outline: none;
 	border-radius: 0;
+}
+
+.nav {
+	margin-top: -2.9em;
+	float: left;
+	width: 0;
+}
+
+.back {
+	font-size: 3em;
 }

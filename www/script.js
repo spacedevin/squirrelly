@@ -21,6 +21,10 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 
 	.run(function($rootScope, $location) {
 		$rootScope.isMobile = /ipad|iphone|ipod|android/i.test(navigator.userAgent.toLowerCase());
+
+		$rootScope.back = function() {
+			$location.path('/');	
+		};
 		
 		if (/Macintosh/i.test(navigator.userAgent.toLowerCase())) {
 			$rootScope.OS = 'mac';
@@ -31,9 +35,7 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		}
 
 		$rootScope.$on('uploaded', function(e, f) {
-			$rootScope.$apply(function($scope) {
-				$scope.error = null;
-			});
+			$rootScope.error = null;
 			$location.path('/view/' + f.uid);	
 		});
 		
@@ -86,12 +88,21 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		
 		this.uploadFile = function(file) {
 
+			if (file.type) {
+				var type = file.type.split('/');
+	
+				if (type[0] != 'text' && type[0] != 'image') {
+					$rootScope.$broadcast('upload-error');
+					return;
+				}
+			}
+			
 			var paste = {};
 			var self = this;
 
 			var fileReader = new FileReader();
 			fileReader.onloadend = function(e) {
-				paste.type = 'image';
+				paste.type = file.type;
 				paste.data = this.result;
 				self.upload(paste);
 			};
@@ -104,11 +115,13 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		}
 	})
 
-	.controller('Home', function ($scope) {
-		
+	.controller('Home', function ($rootScope) {
+		$rootScope.showBack = false;
 	})
 
-	.controller( 'View', function ($scope, $http, $routeParams, UploadService, $location) {
+	.controller('View', function ($rootScope, $scope, $http, $routeParams, UploadService, $location) {
+		$rootScope.showBack = true;
+
 		UploadService.get($routeParams.id, function(file) {
 			$scope.file = file;
 			$scope.url = $location.absUrl();
@@ -136,27 +149,45 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		return {
 			restrict: 'A',
 			link: function(scope, elem, attr, ctrl) {
+			
+				elem.bind('dragover', function(e) {
+					e.preventDefault();
+				});
+			
+				elem.bind('drop', function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+					
+					var files = e.target.files || e.dataTransfer.files;
+					
+					for (var i = 0; i < files.length; i++) {
+
+						UploadService.uploadFile(files[i]);
+
+						// only upload one file
+						break;
+					}
+				});
+
 				elem.bind('paste', function(e) {
+					e.preventDefault();
 
 					var paste = {};
 		
 					if (/text\/plain|text\/html/.test(e.clipboardData.types)) {
-						paste.data = e.clipboardData.getData('text/plain');
-						paste.type = 'txt';
-						
-						UploadService.upload(paste);
+
+						var blob = new Blob([e.clipboardData.getData('text/plain')], {type : 'text/plain'});						
+						UploadService.uploadFile(blob);
 		
 					} else if (/Files/.test(e.clipboardData.types)) {
 		
 						for (var i = 0; i < e.clipboardData.items.length; i++) {
 							if (e.clipboardData.items[i].kind == 'file' && e.clipboardData.items[i].type == 'image/png') {
-							
-								e.preventDefault();
-		
+
 								var imageFile = e.clipboardData.items[i].getAsFile();
 								UploadService.uploadFile(imageFile);
 			
-								// only paste 1 image at a time
+								// only paste one file
 								break;
 							}
 						}

@@ -84,34 +84,43 @@ $bs->router()
 		exit;		
 	})
 	->post('upload', function($Request, $Upload, $Tipsy) {
+		$type = explode('/',$Request->type);
 		
-		if ($Request->type == 'image' && substr($Request->data, 0, 11) == 'data:image/') {
-			// image
-			$ext = preg_replace('/^data:image\/([a-z]{3,4});base64,(.*)$/','\\1',$Request->data);
-			$data = preg_replace('/^data:image\/([a-z]{3,4});base64,(.*)$/','\\2',$Request->data);
+		if (preg_match('/^data:[a-z]+\/[a-z]+;base64,(.*)$/',$Request->data)) {
+			$data = preg_replace('/^data:[a-z]+\/[a-z]+;base64,(.*)$/','\\1',$Request->data);
+			$data = base64_decode($data);
+		} else {
+			$data = $Request->data;
+		}
 
-			switch ($ext) {
+		if ($type[0] == 'image' && substr($Request->data, 0, 11) == 'data:image/') {
+			// image
+			switch ($type[1]) {
 				case 'png':
 				case 'jpg':
 				case 'jpeg':
 				case 'gif':
 					$type = 'image';
-					$data = base64_decode($data);
+					$ext = $type[1];
 					break;
+
 				default:
 					http_response_code(500);
 					exit;
 			}
-			
+
 			if ($ext == 'jpeg') {
 				$ext = 'jpg';
 			}
 
-		} elseif ($Request->type == 'txt') {
+		} elseif ($type[0] == 'text') {
 			// text
 			$type = 'text';
-			$ext = 'txt';
-			$data = $Request->data;
+			$ext = $type[1];
+
+		} else {
+			http_response_code(500);
+			exit;
 		}
 
 		if (!$data) {
@@ -121,7 +130,8 @@ $bs->router()
 
 		$u = $Upload->create([
 			'date' => date('Y-m-d H:i:s'),
-			'type' => $type
+			'type' => $type,
+			'ext' => $ext
 		])->load();
 
 		file_put_contents($Tipsy->config()['data']['path'].'/'.$u->uid, $data);
