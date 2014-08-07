@@ -26,6 +26,17 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			$location.path('/');	
 		};
 		
+		$rootScope.safeApply = function(fn) {
+			var phase = this.$root.$$phase;
+			if (phase == '$apply' || phase == '$digest') {
+				if (fn && (typeof(fn) === 'function')) {
+					fn($rootScope);
+				}
+			} else {
+				this.$apply(fn);
+			}
+		};
+		
 		if (/Macintosh/i.test(navigator.userAgent.toLowerCase())) {
 			$rootScope.OS = 'mac';
 		} else if (/Windows/i.test(navigator.userAgent.toLowerCase())) {
@@ -40,14 +51,14 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		});
 		
 		$rootScope.$on('large-file', function() {
-			$rootScope.$apply(function($scope) {
+			$rootScope.safeApply(function($scope) {
 				$scope.error = 'large-file';
 			});
 		});
 		
 		$rootScope.$on('upload-error', function() {
-			$rootScope.$apply(function($scope) {
-				$scope.error = 'large-file';
+			$rootScope.safeApply(function($scope) {
+				$scope.error = 'upload-error';
 			});
 		});
 	})
@@ -67,7 +78,11 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 				$rootScope.$broadcast('large-file');
 			} else {
 				up.upload({}, d, function(f) {
-					$rootScope.$broadcast('uploaded', f);
+					if (f.uid) {
+						$rootScope.$broadcast('uploaded', f);
+					} else {
+						$rootScope.$broadcast('upload-error');
+					}
 				}, function() {
 					$rootScope.$broadcast('upload-error');
 				});
