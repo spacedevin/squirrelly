@@ -100,8 +100,8 @@ $bs->router()
 				case 'jpg':
 				case 'jpeg':
 				case 'gif':
-					$type = 'image';
 					$ext = $type[1];
+					$type = 'image';
 					break;
 
 				default:
@@ -115,8 +115,9 @@ $bs->router()
 
 		} elseif ($type[0] == 'text') {
 			// text
-			$type = 'text';
 			$ext = $type[1];
+			$type = 'text';
+
 
 		} else {
 			http_response_code(500);
