@@ -1,2 +1,3 @@
 data/*
 vendor/*
+src/config.db.ini

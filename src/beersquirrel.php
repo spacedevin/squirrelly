@@ -5,6 +5,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $bs = new Tipsy\Tipsy;
 
 $bs->config('../src/config.ini');
+if (file_exists('../src/config.db.ini')) {
+	$bs->config('../src/config.db.ini');	
+}
 
 $bs->model('Tipsy\DBO/Upload', [
 	byUid => function($id) {
