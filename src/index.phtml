@@ -2,7 +2,8 @@
 <html ng-app="BeerSquirrel">
 <head>
 <title>Beer Squirrel</title>
-<meta name="viewport" content="initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
+
 <link rel="shortcut icon" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png" />
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -53,7 +54,7 @@
 				</div>
 		
 				<div ng-if="isMobile">
-					<input type="file" class="file-upload" upload-field>
+					<input type="file" class="file-upload" upload-field fast-click>
 					<p><b>Tap</b> to upload an image</p>
 				</div>
 			</div>
@@ -67,7 +68,7 @@
 		</div>
 		
 		<div class="text-input-wrap" ng-if="isMobile">
-			<textarea class="text-input" placeholder="Paste here to upload text"></textarea>
+			<textarea class="text-input" placeholder="Paste here to upload text" fast-click></textarea>
 		</div>
 
 		<div class="tip">
@@ -85,8 +86,8 @@
 
 		<input type="text" class="upload-link" ng-model="url" id="upload-link">
 	
-		<div ng-if="file.type == 'image'">
-			<img src="/file/{{file.uid}}" ng-if="file.uid" class="image">
+		<div ng-if="file.type == 'image' && file.uid">
+			<a href="/file/{{file.uid}}" target="_self"><img ng-src="/file/{{file.uid}}" class="image"></a>
 		</div>
 
 		<div ng-if="file.type == 'text'">
@@ -101,6 +102,7 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular-route.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular-resource.js"></script>
 
+<script type="text/javascript" src="/fastclick.js"></script>
 <script type="text/javascript" src="/script.js"></script>
 </body>
 </html>

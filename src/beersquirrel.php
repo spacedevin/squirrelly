@@ -69,14 +69,12 @@ $bs->router()
 
 		switch ($u->type) {
 			case 'text':
-				header('Content-type: text/plain');
-				break;
-
 			case 'image':
-				header('Content-type: image/'.$u->ext);
+				header('Content-type: '.$u->type.'/'.$u->ext);
 				break;
 
 			default:
+				// it shouldnt ever get here, but just in case
 				http_response_code(500);
 				exit;
 				break;
@@ -88,53 +86,40 @@ $bs->router()
 	->post('upload', function($Request, $Upload, $Tipsy) {
 		$type = explode('/',$Request->type);
 		
-		if (preg_match('/^data:[a-z]+\/[a-z]+;base64,(.*)$/',$Request->data)) {
-			$data = preg_replace('/^data:[a-z]+\/[a-z]+;base64,(.*)$/','\\1',$Request->data);
-			$data = base64_decode($data);
-		} else {
-			$data = $Request->data;
-		}
-
-		if ($type[0] == 'image' && substr($Request->data, 0, 11) == 'data:image/') {
-			// image
-			switch ($type[1]) {
-				case 'png':
-				case 'jpg':
-				case 'jpeg':
-				case 'gif':
-					$ext = $type[1];
-					$type = 'image';
-					break;
-
-				default:
-					http_response_code(500);
-					exit;
+		$types = [
+			'text' => null,
+			'image' => ['png','gif','jpg','jpeg','svg']
+		];
+		
+		// unsupported type
+		if (!array_key_exists($type[0], $types)) {
+			if ($types[$type[0]] && !$types[$type[0]][$type[1]]) {
+				die('blah');
 			}
-
-			if ($ext == 'jpeg') {
-				$ext = 'jpg';
-			}
-
-		} elseif ($type[0] == 'text') {
-			// text
-			$ext = $type[1];
-			$type = 'text';
-
-
-		} else {
+		// || ($types[$type[0]] && !$types[$type[0]][$type[1]])
 			http_response_code(500);
+			echo 'Invalid file format';
 			exit;
 		}
 
-		if (!$data) {
+		// decode any data
+		$search = '/^data:[a-z]+\/[a-z]+;base64,(.*)$/';
+		if (preg_match($search,$Request->data)) {
+			$data = base64_decode(preg_replace($search,'\\1',$Request->data));
+		} else {
+			$data = $Request->data;
+		}
+		
+		// no data
+		if (!$data || !$type) {
 			http_response_code(500);
 			exit;
 		}
 
 		$u = $Upload->create([
 			'date' => date('Y-m-d H:i:s'),
-			'type' => $type,
-			'ext' => $ext
+			'type' => $type[0],
+			'ext' => $type[1]
 		])->load();
 
 		file_put_contents($Tipsy->config()['data']['path'].'/'.$u->uid, $data);

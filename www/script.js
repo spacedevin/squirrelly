@@ -61,12 +61,16 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 				$scope.error = 'upload-error';
 			});
 		});
+		
+		$rootScope.$on('upload-start', function() {
+			$location.path('/');
+		});
 	})
 	
 	.service('UploadService', function($resource, $routeParams, $location, $rootScope) {
 
 		var up = $resource('/upload', {}, {
-			'upload': { 'method': 'POST', params : { 'action' : 'upload' }}
+			'upload': { 'method': 'POST'}
 		});
 
 		var file = $resource('/get/:id', {id: '@id'});
@@ -212,3 +216,6 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		};
 	});
 
+window.addEventListener('load', function() {
+    FastClick.attach(document.body);
+}, false);
