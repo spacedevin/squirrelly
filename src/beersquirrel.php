@@ -12,6 +12,10 @@ if (file_exists('../src/config.db.ini')) {
 }
 
 $bs->model('Tipsy\DBO/Upload', [
+	del => function() {
+		unlink($this->path());
+		$this->delete();
+	},
 	byUid => function($id) {
 		return $this->q('select * from upload where uid=?', $id)->get(0);
 	},
@@ -32,6 +36,6 @@ $bs->model('Tipsy\DBO/Upload', [
 		
 		return $ret;
 	},
-	id => 'id',
-	table => 'upload'
+	_id => 'id',
+	_table => 'upload'
 ]);

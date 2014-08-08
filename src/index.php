@@ -18,13 +18,13 @@ $bs->router()
 	->when('file/:id', function($Params, $Upload, $Tipsy) {
 		$id = explode('.',$Params->id)[0];
 		$u = $Upload->byUid($id);
+		
+		$file = $u->path();
 
-		if (!$u->uid) {
+		if (!$u->uid || !file_exists($file)) {
 			http_response_code(404);
 			exit;
 		}
-		
-		$file = $u->path();
 
 		http_response_code(200);
 		header('Date: '.date('r'));
