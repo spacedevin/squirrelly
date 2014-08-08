@@ -1,4 +1,6 @@
-Beer Squirrel is an Image and text sharing tool
+## Beer Squirrel
+
+is an Image and text sharing tool
 
 
 #### Requirements
