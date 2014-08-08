@@ -1,3 +1,5 @@
+![Beer Squirrel](https://raw.githubusercontent.com/arzynik/beersquirrel/master/www/icon.png)
+
 ## Beer Squirrel
 
 is an Image and text sharing tool
