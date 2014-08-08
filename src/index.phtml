@@ -36,7 +36,7 @@
 	<div ng-view></div>
 
 	<div class="footer home">
-		<a href="http://beersquirrel.xyz">Beer Squirrel</a> is an open source project created by <a href="http://devin.la/" target="_blank">Devin Smith</a>, built with <a href="http://tipsy.la/" target="_blank">Tipsy</a>, and hosted on <a href="https://github.com/arzynik/beersquirrel" target="_blank">GitHub</a>
+		<a href="https://github.com/arzynik/beersquirrel">Beer Squirrel</a> is an open source project created by <a href="http://devin.la/" target="_blank">Devin Smith</a>, built with <a href="http://tipsy.la/" target="_blank">Tipsy</a>, with icons by <a href="https://octicons.github.com/" target="_blank">GitHub</a>
 		&nbsp;No porn, illegal, or weird shit allowed. Uploads are deleted every week.
 		<br><br>
 		
@@ -55,21 +55,17 @@
 				</div>
 		
 				<div ng-if="isMobile">
-					<input type="file" class="file-upload" upload-field fast-click>
+					<input type="file" class="file-upload" upload-field>
 					<p><b>Tap</b> to upload an image</p>
 				</div>
 			</div>
 			<div class="instructions" ng-if="error">
-				<span ng-switch="error">
-					<span ng-switch-when="large-file">File size too large</span>
-					<span ng-switch-when="upload-error">Error uploading file</span>
-					<span ng-switch-default></span>
-				</span>
+				{{error}}
 			</div>
 		</div>
 		
 		<div class="text-input-wrap" ng-if="isMobile">
-			<textarea class="text-input" placeholder="Paste here to upload text" fast-click></textarea>
+			<textarea class="text-input" placeholder="Paste here to upload text"></textarea>
 		</div>
 
 		<div class="tip">

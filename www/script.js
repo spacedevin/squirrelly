@@ -49,28 +49,18 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			$rootScope.error = null;
 			$location.path('/view/' + f.uid);	
 		});
-		
-		$rootScope.$on('large-file', function() {
+
+		$rootScope.$on('upload-error', function(e, msg) {
 			$rootScope.safeApply(function($scope) {
-				$scope.error = 'large-file';
+				$scope.error = msg ? msg : 'Could not upload file';
 			});
-		});
-		
-		$rootScope.$on('upload-error', function() {
-			$rootScope.safeApply(function($scope) {
-				$scope.error = 'upload-error';
-			});
-		});
-		
-		$rootScope.$on('upload-start', function() {
-			$location.path('/');
 		});
 	})
 	
 	.service('UploadService', function($resource, $routeParams, $location, $rootScope) {
 
 		var up = $resource('/upload', {}, {
-			'upload': { 'method': 'POST'}
+			'upload': { 'method': 'POST', params : { 'action' : 'upload' }}
 		});
 
 		var file = $resource('/get/:id', {id: '@id'});
@@ -79,16 +69,16 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			var max = 2097152;
 
 			if (d.data.length > max) {
-				$rootScope.$broadcast('large-file');
+				$rootScope.$broadcast('upload-error', 'File too big');
 			} else {
 				up.upload({}, d, function(f) {
 					if (f.uid) {
 						$rootScope.$broadcast('uploaded', f);
 					} else {
-						$rootScope.$broadcast('upload-error');
+						$rootScope.$broadcast('upload-error', f);
 					}
 				}, function() {
-					$rootScope.$broadcast('upload-error');
+					$rootScope.$broadcast('upload-error', '500');
 				});
 			}
 		}
@@ -111,7 +101,7 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 				var type = file.type.split('/');
 	
 				if (type[0] != 'text' && type[0] != 'image') {
-					$rootScope.$broadcast('upload-error');
+					$rootScope.$broadcast('upload-error', 'Unsupported file type');
 					return;
 				}
 			}
@@ -120,14 +110,15 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			var self = this;
 
 			var fileReader = new FileReader();
+
 			fileReader.onloadend = function(e) {
 				paste.type = file.type;
 				paste.data = this.result;
 				self.upload(paste);
 			};
 
-			fileReader.onerror = function() {
-				$rootScope.$broadcast('upload-error');
+			fileReader.onerror = function(e) {
+				$rootScope.$broadcast('upload-error', 'Could not read file');
 			};
 			
 			fileReader.readAsDataURL(file);			
@@ -136,6 +127,9 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 
 	.controller('Home', function ($rootScope) {
 		$rootScope.showBack = false;
+		
+		$rootScope.fileReader = window.FileReader ? 'yes' : 'no';
+		$rootScope.formData = window.FormData ? 'yes' : 'no';
 	})
 
 	.controller('View', function ($rootScope, $scope, $http, $routeParams, UploadService, $location) {
@@ -158,7 +152,8 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			restrict: 'A',
 			link: function(scope, elem, attr, ctrl) {
 				elem.bind('change', function(e) {
-					UploadService.uploadFile(e.target.files[0]);
+					var file = (e.target.files || e.files)[0];
+					UploadService.uploadFile(file);
 				});
 			}
 		};
@@ -180,7 +175,6 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 					var files = e.target.files || e.dataTransfer.files;
 					
 					for (var i = 0; i < files.length; i++) {
-
 						UploadService.uploadFile(files[i]);
 
 						// only upload one file
@@ -216,6 +210,3 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		};
 	});
 
-window.addEventListener('load', function() {
-    FastClick.attach(document.body);
-}, false);
