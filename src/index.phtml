@@ -39,7 +39,6 @@
 		<a href="https://github.com/arzynik/beersquirrel">Beer Squirrel</a> is an open source project created by <a href="http://devin.la/" target="_blank">Devin Smith</a>, built with <a href="http://tipsy.la/" target="_blank">Tipsy</a>, with icons by <a href="https://octicons.github.com/" target="_blank">GitHub</a>
 		&nbsp;No porn, illegal, or weird shit allowed. Uploads are deleted every week.
 		<br><br>
-		
 	</div>
 </div>
 </center>
@@ -55,12 +54,14 @@
 				</div>
 		
 				<div ng-if="isMobile">
-					<input type="file" class="file-upload" upload-field>
 					<p><b>Tap</b> to upload an image</p>
 				</div>
 			</div>
 			<div class="instructions" ng-if="error">
 				{{error}}
+			</div>
+			<div ng-if="isMobile">
+				<input type="file" class="file-upload" upload-field>
 			</div>
 		</div>
 		
