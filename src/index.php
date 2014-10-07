@@ -50,7 +50,7 @@ $bs->router()
 	})
 	->post('upload', function($Request, $Upload, $Tipsy) {
 		$type = explode('/',$Request->type);
-		
+
 		$types = [
 			'text' => null,
 			'image' => ['png','gif','jpg','jpeg','svg']
@@ -59,7 +59,9 @@ $bs->router()
 		// unsupported type
 		if (!array_key_exists($type[0], $types)) {
 			if ($types[$type[0]] && !$types[$type[0]][$type[1]]) {
-				die('blah');
+				http_response_code(500);
+				echo 'Invalid file type';
+				exit;
 			}
 		// || ($types[$type[0]] && !$types[$type[0]][$type[1]])
 			http_response_code(500);
@@ -71,12 +73,16 @@ $bs->router()
 		$search = '/^data:[a-z]+\/[a-z]+;base64,(.*)$/';
 		if (preg_match($search,$Request->data)) {
 			$data = base64_decode(preg_replace($search,'\\1',$Request->data));
+
+		} elseif ($_FILES['data']) {
+			$file = $_FILES['data']['tmp_name'];
+
 		} else {
 			$data = $Request->data;
 		}
 		
 		// no data
-		if (!$data || !$type) {
+		if ((!$data && !$file) || !$type) {
 			http_response_code(500);
 			exit;
 		}
@@ -86,8 +92,14 @@ $bs->router()
 			'type' => $type[0],
 			'ext' => $type[1]
 		])->load();
-
-		file_put_contents($Tipsy->config()['data']['path'].'/'.$u->uid, $data);
+		
+		$filename = $Tipsy->config()['data']['path'].'/'.$u->uid;
+		
+		if ($data) {
+			file_put_contents($filename, $data);
+		} else {
+			move_uploaded_file($file, $filename);
+		}
 
 		echo $u->json();
 	})
