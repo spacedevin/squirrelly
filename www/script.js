@@ -66,7 +66,7 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		var file = $resource('/get/:id', {id: '@id'});
 
 		this.upload = function(d) {
-			var max = 2097152;
+			var max = 20000000;
 
 			if (d.data.length > max) {
 				$rootScope.$broadcast('upload-error', 'File too big');
