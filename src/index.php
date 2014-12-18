@@ -2,6 +2,20 @@
 
 require_once __DIR__ . '/beersquirrel.php';
 
+function getId($file) {
+	$id = explode('.',$file)[0];
+	return preg_replace('/[^0-9a-z]/i', '', $id);
+}
+
+if (preg_match('/facebookexternalhit/', $_SERVER['HTTP_USER_AGENT'])) {
+	$bs->router()->when('view/:id', function($View, $Params, $Upload, $Scope) {
+		$u = $Upload->byUid(getId($Params->id));
+		$Scope->image = $u;
+		echo $View->render('view-facebook');
+		exit;
+	});
+}
+
 
 $bs->router()
 	->when('get/:id', function($Params, $Upload, $Tipsy) {
@@ -16,8 +30,7 @@ $bs->router()
 		echo $u->json();
 	})
 	->when('file/:id', function($Params, $Upload, $Tipsy) {
-		$id = explode('.',$Params->id)[0];
-		$u = $Upload->byUid($id);
+		$u = $Upload->byUid(getId($Params->id));
 		
 		$file = $u->path();
 
