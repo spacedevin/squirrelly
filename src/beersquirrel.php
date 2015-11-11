@@ -11,7 +11,7 @@ if (file_exists('../src/config.db.ini')) {
 	$bs->config('../src/config.db.ini');	
 }
 
-$bs->model('Tipsy\DBO/Upload', [
+$bs->service('Tipsy\Resource/Upload', [
 	del => function() {
 		unlink($this->path());
 		$this->delete();

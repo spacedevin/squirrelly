@@ -1,27 +1,31 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "b5791fb9b2636ec3e400f973673f53fd",
+    "hash": "ca1f290e42e9034464a2fbb12dd24a54",
+    "content-hash": "f43360cb722abe8186869cbb682b9944",
     "packages": [
         {
             "name": "arzynik/tipsy",
-            "version": "dev-master",
+            "version": "v0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/arzynik/Tipsy.git",
-                "reference": "3a35e8b4f0af9ba7983cf911f2a304db8eb3ee64"
+                "reference": "75aaba9e609d8b03ae2602a107018b02bbd2a9d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/arzynik/Tipsy/zipball/3a35e8b4f0af9ba7983cf911f2a304db8eb3ee64",
-                "reference": "3a35e8b4f0af9ba7983cf911f2a304db8eb3ee64",
+                "url": "https://api.github.com/repos/arzynik/Tipsy/zipball/75aaba9e609d8b03ae2602a107018b02bbd2a9d8",
+                "reference": "75aaba9e609d8b03ae2602a107018b02bbd2a9d8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "satooshi/php-coveralls": "dev-master"
             },
             "type": "library",
             "autoload": {
@@ -48,24 +52,17 @@
                 "mvw",
                 "php"
             ],
-            "time": "2014-08-08 00:27:02"
+            "time": "2014-07-24 00:00:00"
         }
     ],
-    "packages-dev": [
-
-    ],
-    "aliases": [
-
-    ],
+    "packages-dev": [],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "arzynik/tipsy": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }

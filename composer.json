@@ -6,14 +6,8 @@
             "email": "devin@beersquirrel.xyz"
         }
     ],
-	"minimum-stability": "stable",
 	"require": {
 		"php": ">=5.4.0",
-		"arzynik/tipsy": "dev-master"
-	},
-	"autoload": {
-		"psr-0": {
-			"Tipsy": "src/"
-		}
+		"arzynik/tipsy": ">=v0.10.0"
 	}
 }

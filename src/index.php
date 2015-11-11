@@ -16,7 +16,6 @@ if (preg_match('/facebookexternalhit/', $_SERVER['HTTP_USER_AGENT'])) {
 	});
 }
 
-
 $bs->router()
 	->when('get/:id', function($Params, $Upload, $Tipsy) {
 		$id = explode('.',$Params->id)[0];
