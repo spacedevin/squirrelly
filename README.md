@@ -1,4 +1,4 @@
-![Beer Squirrel](https://raw.githubusercontent.com/arzynik/beersquirrel/master/www/icon.png)
+![Beer Squirrel](https://raw.githubusercontent.com/arzynik/beersquirrel/master/web/icon.svg)
 
 ## Beer Squirrel
 
