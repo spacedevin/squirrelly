@@ -1,13 +1,12 @@
 {
-    "name": "arzynik/beersquirrel",
-    "authors": [
-        {
-            "name": "Devin",
-            "email": "devin@beersquirrel.xyz"
-        }
-    ],
+	"name": "arzynik/beersquirrel",
+	"authors": [
+		{
+			"name": "Devin",
+			"email": "devin@beersquirrel.xyz"
+		}
+	],
 	"require": {
-		"php": ">=5.4.0",
-		"arzynik/tipsy": ">=v0.10.0"
+		"arzynik/tipsy": "dev-master"
 	}
 }

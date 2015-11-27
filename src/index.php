@@ -25,24 +25,24 @@ $bs->router()
 			http_response_code(404);
 			exit;
 		}
-		
+
 		echo $u->json();
 	})
 	->when('file/:id', function($Params, $Upload, $Tipsy) {
 		$u = $Upload->byUid(getId($Params->id));
-		
+
 		$file = $u->path();
 
-		if (!$u->uid || !file_exists($file)) {
+		if (!$u->valid()) {
 			http_response_code(404);
 			exit;
 		}
 
 		http_response_code(200);
 		header('Date: '.date('r'));
-		header('Last-Modified: '.date('r',filemtime($file)));
+		header('Last-Modified: '.date('r',$u->date));
 		header('Accept-Ranges: bytes');
-		header('Content-Length: '.filesize($file));
+		header('Content-Length: '.$u->size());
 
 		switch ($u->type) {
 			case 'text':
@@ -57,8 +57,8 @@ $bs->router()
 				break;
 		}
 
-		readfile($file);
-		exit;		
+		$u->display();
+		exit;
 	})
 	->post('upload', function($Request, $Upload, $Tipsy) {
 		$type = explode('/',$Request->type);
@@ -67,7 +67,7 @@ $bs->router()
 			'text' => null,
 			'image' => ['png','gif','jpg','jpeg','svg']
 		];
-		
+
 		// unsupported type
 		if (!array_key_exists($type[0], $types)) {
 			if ($types[$type[0]] && !$types[$type[0]][$type[1]]) {
@@ -92,7 +92,7 @@ $bs->router()
 		} else {
 			$data = $Request->data;
 		}
-		
+
 		// no data
 		if ((!$data && !$file) || !$type) {
 			http_response_code(500);
@@ -104,14 +104,8 @@ $bs->router()
 			'type' => $type[0],
 			'ext' => $type[1]
 		])->load();
-		
-		$filename = $Tipsy->config()['data']['path'].'/'.$u->uid;
-		
-		if ($data) {
-			file_put_contents($filename, $data);
-		} else {
-			move_uploaded_file($file, $filename);
-		}
+
+		$u->put($file, $data);
 
 		echo $u->json();
 	})

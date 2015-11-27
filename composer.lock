@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ca1f290e42e9034464a2fbb12dd24a54",
-    "content-hash": "f43360cb722abe8186869cbb682b9944",
+    "hash": "fe663920e91c9908dc7d6015de3c0a7d",
+    "content-hash": "1f97c51193b0f391397e1f853e071f6f",
     "packages": [
         {
             "name": "arzynik/tipsy",
-            "version": "v0.10.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/arzynik/Tipsy.git",
-                "reference": "75aaba9e609d8b03ae2602a107018b02bbd2a9d8"
+                "reference": "6dcd444750116fdb8c5332a48ee55e41557df8d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/arzynik/Tipsy/zipball/75aaba9e609d8b03ae2602a107018b02bbd2a9d8",
-                "reference": "75aaba9e609d8b03ae2602a107018b02bbd2a9d8",
+                "url": "https://api.github.com/repos/arzynik/Tipsy/zipball/6dcd444750116fdb8c5332a48ee55e41557df8d8",
+                "reference": "6dcd444750116fdb8c5332a48ee55e41557df8d8",
                 "shasum": ""
             },
             "require": {
@@ -52,17 +52,17 @@
                 "mvw",
                 "php"
             ],
-            "time": "2014-07-24 00:00:00"
+            "time": "2015-11-27 18:57:03"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "arzynik/tipsy": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {
-        "php": ">=5.4.0"
-    },
+    "platform": [],
     "platform-dev": []
 }

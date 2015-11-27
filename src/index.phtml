@@ -52,7 +52,7 @@
 				<div ng-if="!isMobile">
 					<p>Paste something from your clipboard using <b>Cmd+V</b></p>
 				</div>
-		
+
 				<div ng-if="isMobile">
 					<p><b>Tap</b> to upload an image</p>
 				</div>
@@ -64,7 +64,7 @@
 				<input type="file" class="file-upload" upload-field>
 			</div>
 		</div>
-		
+
 		<div class="text-input-wrap" ng-if="isMobile">
 			<textarea class="text-input" placeholder="Paste here to upload text"></textarea>
 		</div>
@@ -83,7 +83,7 @@
 	<div class="upload">
 
 		<input type="text" class="upload-link" ng-model="url" id="upload-link">
-	
+
 		<div ng-if="file.type == 'image' && file.uid">
 			<a href="/file/{{file.uid}}" target="_self"><img ng-src="/file/{{file.uid}}" class="image"></a>
 		</div>

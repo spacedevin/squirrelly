@@ -1,0 +1,17 @@
+{
+	"name": "Beer Squirrel",
+	"description": "An Image and text sharing tool",
+	"website": "http://beersquirrel.xyz",
+	"repository": "https://github.com/arzynik/beersquirrel",
+	"keywords": ["tipsy", "image", "sharing", "text"],
+	"addons": ["heroku-postgresql"],
+	"env": {
+		"ENV": "heroku",
+		"S3_KEY": "",
+		"S3_SECRET": "",
+		"S3_BUCKET": ""
+	},
+	"scripts": {
+		"postdeploy": "php install/install.php"
+	}
+}
