@@ -9,7 +9,7 @@ Beer Squirrel is an Image and text sharing tool
 
 The **Procfile** contains what you need to switch between Apache or Nginx. Nginx is set by default.
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 
 #### Deploying on your own environment
