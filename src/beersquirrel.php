@@ -42,14 +42,18 @@ $bs->service('Tipsy\Resource/Upload', [
 	},
 	display => function() {
 		if ($this->tipsy()->config()['data']['type'] == 'local') {
-			readfile($file);
+			readfile($this->path());
 		} else {
 			echo $this->data;
 		}
 	},
 	valid => function() {
-		return true;
-		if ($u->uid && (($this->tipsy()->config()['data']['type'] == 'local' && file_exists($file)) || ($this->tipsy()->config()['data']['type'] == 'sql' && $this->data))) {
+		if (!$this->uid) {
+			return false;
+		}
+		if ($this->tipsy()->config()['data']['type'] == 'local' && file_exists($this->path())) {
+			return true;
+		} elseif ($this->tipsy()->config()['data']['type'] == 'sql' && $this->data) {
 			return true;
 		} else {
 			die('x');

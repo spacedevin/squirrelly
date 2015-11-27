@@ -31,8 +31,6 @@ $bs->router()
 	->when('file/:id', function($Params, $Upload, $Tipsy) {
 		$u = $Upload->byUid(getId($Params->id));
 
-		$file = $u->path();
-
 		if (!$u->valid()) {
 			http_response_code(404);
 			exit;
