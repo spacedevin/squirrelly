@@ -2,7 +2,7 @@
 
 ## Beer Squirrel
 
-Beer Squirrel is an Image and text sharing tool
+Beer Squirrel is an Image and text sharing tool that allows you to paste straight from your clipboard and share with an anonymous url.
 
 
 #### Deploying on Heroku

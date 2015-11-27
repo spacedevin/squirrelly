@@ -13,6 +13,10 @@ if (file_exists('../src/config.db.ini')) {
 if (getenv('HEROKU')) {
 	$bs->config('../src/config.heroku.ini');
 }
+$envdb = getenv('CLEARDB_DATABASE_URL') ? getenv('CLEARDB_DATABASE_URL') : getenv('DATABASE_URL');
+if ($envdb) {
+	$tipsy->config(['db' => ['url' => $envdb]]);
+}
 
 $bs->service('Tipsy\Resource/Upload', [
 	put => function($file, $data) {
