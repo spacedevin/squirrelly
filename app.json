@@ -8,6 +8,7 @@
 	"env": {
 		"ENV": "heroku"
 	},
+	"logo": "https://small-sharp-tool.com/logo.svg",
 	"scripts": {
 		"postdeploy": "php install/install.php"
 	}
