@@ -8,7 +8,7 @@
 	"env": {
 		"ENV": "heroku"
 	},
-	"logo": "https://github.com/arzynik/beersquirrel/blob/master/web/icon.svg",
+	"logo": "https://raw.githubusercontent.com/arzynik/beersquirrel/master/web/icon.svg",
 	"scripts": {
 		"postdeploy": "php install/install.php"
 	}
