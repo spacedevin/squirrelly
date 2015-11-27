@@ -15,7 +15,7 @@ if (getenv('HEROKU')) {
 }
 $envdb = getenv('CLEARDB_DATABASE_URL') ? getenv('CLEARDB_DATABASE_URL') : getenv('DATABASE_URL');
 if ($envdb) {
-	$tipsy->config(['db' => ['url' => $envdb]]);
+	$bs->config(['db' => ['url' => $envdb]]);
 }
 
 $bs->service('Tipsy\Resource/Upload', [
