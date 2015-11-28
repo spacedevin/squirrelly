@@ -40,7 +40,7 @@ $bs->router()
 		header('Date: '.date('r'));
 		header('Last-Modified: '.date('r',$u->date));
 		header('Accept-Ranges: bytes');
-		header('Content-Length: '.$u->size());
+		header('Content-Length: '.$u->size);
 
 		switch ($u->type) {
 			case 'text':
@@ -101,7 +101,7 @@ $bs->router()
 			'date' => date('Y-m-d H:i:s'),
 			'type' => $type[0],
 			'ext' => $type[1]
-		])->load();
+		]);
 
 		$u->put($file, $data);
 

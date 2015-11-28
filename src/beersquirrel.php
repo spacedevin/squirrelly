@@ -14,12 +14,93 @@ if (getenv('HEROKU')) {
 	$bs->config('../src/config.heroku.ini');
 }
 $envdb = getenv('CLEARDB_DATABASE_URL') ? getenv('CLEARDB_DATABASE_URL') : getenv('DATABASE_URL');
+
 if ($envdb) {
 	$bs->config(['db' => ['url' => $envdb]]);
 }
 
+/*
+experiements with tipsy models
+if (strpos($envdb, 'postgres') !== false) {
+	$bs->service('Tipsy\Db/Db', [
+		mysqlToPgsql => function($query, $args = []) {
+			// replace backticks
+			$query = str_replace('`','"', $query);
+
+			// replace add single quotes to interval statements
+			$query = preg_replace('/(interval) ([0-9]+) ([a-z]+)/i','\\1 \'\\2 \\3\'', $query);
+
+			// replace unix_timestamp
+			$query = preg_replace('/unix_timestamp( )?\((.*?)\)/i','extract(epoch FROM \\2)', $query);
+
+			// replace date_sub
+			$query = preg_replace('/(date_sub\((.*?),(.*?))\)/i','\\2 - \\3', $query);
+
+			// replace date formats
+			$query = preg_replace_callback('/date_format\(( )?(.*?),( )?("(.*?)"|\'(.*?)\')( )?\)/i',function($m) {
+				$find = ['/\%Y/', '/\%m/', '/\%d/', '/\%H/', '/\%i/', '/\%s/', '/\%W/'];
+				$replace = ['YYYY', 'MM', 'DD', 'HH24', 'MI', 'SS', 'D'];
+				$format = preg_replace($find, $replace, $m[6] ? $m[6] : $m[5]);
+				return 'to_char('.$m[2].', \''.$format.'\')';
+			}, $query);
+
+
+			if ($args) {
+				foreach ($args as $k => $v) {
+					if ($v === true) {
+						$args[$k] = 'true';
+					} elseif ($v === false) {
+						$args[$k] = 'false';
+					}
+				}
+			}
+			return [query => $query, args => $args];
+		},
+
+		query => function($query, $args = []) {
+			$filter = $this->mysqlToPgsql($query, $args);
+			return $this->query($filter['query'], $filter['args']);
+		},
+
+		exec => function($query) {
+			$filter = $this->mysqlToPgsql($query);
+			return $this->exec($filter['query']);
+		}
+	]);
+
+}
+*/
+//die($bs->service('Db')->mysqlToPgsql('test`asd`')['query']);
+
+// transforms mysql queries to pgsql (kinda)
+class Db extends \Tipsy\Db {
+	public static function mysqlToPgsql($query) {
+		// replace backticks
+		$query = str_replace('`','"', $query);
+
+		// replace add single quotes to interval statements
+		$query = preg_replace('/(interval) ([0-9]+) ([a-z]+)/i','\\1 \'\\2 \\3\'', $query);
+
+		return $query;
+	}
+
+	public function query($query, $args = []) {
+		return parent::query(self::mysqlToPgsql($query), $args);
+	}
+
+	public function exec($query) {
+		return parent::exec(self::mysqlToPgsql($query));
+	}
+}
+
+if (strpos($envdb, 'postgres') !== false) {
+	$bs->service('Db');
+}
+
 $bs->service('Tipsy\Resource/Upload', [
 	put => function($file, $data) {
+		$u = $this->load($u->id);
+
 		if ($this->tipsy()->config()['data']['type'] == 'local') {
 			$filename = $this->tipsy()->config()['data']['path'].'/'.$this->uid;
 
@@ -28,27 +109,33 @@ $bs->service('Tipsy\Resource/Upload', [
 			} else {
 				move_uploaded_file($file, $filename);
 			}
+			$this->size = filesize($filename);
 		} else {
+
 			if ($data) {
 				$this->data = $data;
 			} else {
 				$this->data = file_get_contents($file);
 			}
+
+			$this->size = strlen($this->data);
+
+			if ($this->type == 'image') {
+				$this->data = base64_encode($this->data);
+			}
 		}
+
 		$this->save();
-	},
-	size => function() {
-		if ($this->tipsy()->config()['data']['type'] == 'local') {
-			return filesize($file);
-		} else {
-			return strlen($this->data);
-		}
 	},
 	display => function() {
 		if ($this->tipsy()->config()['data']['type'] == 'local') {
 			readfile($this->path());
 		} else {
-			echo $this->data;
+			if ($this->type == 'image') {
+				echo base64_decode($this->data);
+			} else {
+				echo $this->data;
+			}
 		}
 	},
 	valid => function() {
@@ -60,7 +147,6 @@ $bs->service('Tipsy\Resource/Upload', [
 		} elseif ($this->tipsy()->config()['data']['type'] == 'sql' && $this->data) {
 			return true;
 		} else {
-			die('x');
 			return false;
 		}
 	},
@@ -88,7 +174,11 @@ $bs->service('Tipsy\Resource/Upload', [
 			if ($this->tipsy()->config()['data']['type'] == 'local') {
 				$ret['content'] = file_get_contents($this->path());
 			} else {
-				$ret['content'] = $this->data;
+				if (is_string($this->data)) {
+					$ret['content'] = $this->data;
+				} else {
+					$ret['content'] = stream_get_contents($this->data);
+				}
 			}
 		}
 

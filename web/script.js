@@ -23,9 +23,9 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		$rootScope.isMobile = /ipad|iphone|ipod|android/i.test(navigator.userAgent.toLowerCase());
 
 		$rootScope.back = function() {
-			$location.path('/');	
+			$location.path('/');
 		};
-		
+
 		$rootScope.safeApply = function(fn) {
 			var phase = this.$root.$$phase;
 			if (phase == '$apply' || phase == '$digest') {
@@ -36,7 +36,7 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 				this.$apply(fn);
 			}
 		};
-		
+
 		if (/Macintosh/i.test(navigator.userAgent.toLowerCase())) {
 			$rootScope.OS = 'mac';
 		} else if (/Windows/i.test(navigator.userAgent.toLowerCase())) {
@@ -47,7 +47,7 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 
 		$rootScope.$on('uploaded', function(e, f) {
 			$rootScope.error = null;
-			$location.path('/view/' + f.uid);	
+			$location.path('/view/' + f.uid);
 		});
 
 		$rootScope.$on('upload-error', function(e, msg) {
@@ -56,7 +56,7 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			});
 		});
 	})
-	
+
 	.service('UploadService', function($resource, $routeParams, $location, $rootScope) {
 
 		var up = $resource('/upload', {}, {
@@ -72,6 +72,7 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 				$rootScope.$broadcast('upload-error', 'File too big');
 			} else {
 				up.upload({}, d, function(f) {
+					console.log(f);
 					if (f.uid) {
 						$rootScope.$broadcast('uploaded', f);
 					} else {
@@ -94,18 +95,18 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 				$rootScope.$broadcast('file-error');
 			});
 		}
-		
+
 		this.uploadFile = function(file) {
 
 			if (file.type) {
 				var type = file.type.split('/');
-	
+
 				if (type[0] != 'text' && type[0] != 'image') {
 					$rootScope.$broadcast('upload-error', 'Unsupported file type');
 					return;
 				}
 			}
-			
+
 			var paste = {};
 			var self = this;
 
@@ -120,14 +121,14 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			fileReader.onerror = function(e) {
 				$rootScope.$broadcast('upload-error', 'Could not read file');
 			};
-			
-			fileReader.readAsDataURL(file);			
+
+			fileReader.readAsDataURL(file);
 		}
 	})
 
 	.controller('Home', function ($rootScope) {
 		$rootScope.showBack = false;
-		
+
 		$rootScope.fileReader = window.FileReader ? 'yes' : 'no';
 		$rootScope.formData = window.FormData ? 'yes' : 'no';
 	})
@@ -146,7 +147,7 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 			});
 		});
 	})
-	
+
 	.directive('uploadField', function($http, $location, UploadService) {
 		return {
 			restrict: 'A',
@@ -163,17 +164,17 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 		return {
 			restrict: 'A',
 			link: function(scope, elem, attr, ctrl) {
-			
+
 				elem.bind('dragover', function(e) {
 					e.preventDefault();
 				});
-			
+
 				elem.bind('drop', function(e) {
 					e.preventDefault();
 					e.stopPropagation();
-					
+
 					var files = e.target.files || e.dataTransfer.files;
-					
+
 					for (var i = 0; i < files.length; i++) {
 						UploadService.uploadFile(files[i]);
 
@@ -186,20 +187,20 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 					e.preventDefault();
 
 					var paste = {};
-		
+
 					if (/text\/plain|text\/html/.test(e.clipboardData.types)) {
 
-						var blob = new Blob([e.clipboardData.getData('text/plain')], {type : 'text/plain'});						
+						var blob = new Blob([e.clipboardData.getData('text/plain')], {type : 'text/plain'});
 						UploadService.uploadFile(blob);
-		
+
 					} else if (/Files/.test(e.clipboardData.types)) {
-		
+
 						for (var i = 0; i < e.clipboardData.items.length; i++) {
 							if (e.clipboardData.items[i].kind == 'file' && e.clipboardData.items[i].type == 'image/png') {
 
 								var imageFile = e.clipboardData.items[i].getAsFile();
 								UploadService.uploadFile(imageFile);
-			
+
 								// only paste one file
 								break;
 							}
