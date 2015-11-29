@@ -30,9 +30,9 @@ a {
 	color: #fff;
 }
 
-.logo .mega-octicon {
-	font-size: 8em;
-	text-shadow: -1px -.5px 0 #fff;
+.logo .svg {
+	height: 9em;
+	background: url(/icon.svg) center center no-repeat;
 }
 
 .content {
@@ -98,7 +98,7 @@ h2 {
 }
 
 .instructions {
-	font-size: 1.2em;	
+	font-size: 1.2em;
 }
 
 .tip {
