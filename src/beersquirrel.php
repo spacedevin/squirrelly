@@ -106,6 +106,12 @@ if (strpos($envdb, 'postgres') !== false) {
 
 $bs->service('Tipsy\Resource/Upload', [
 	put => function($file, $data) {
+		$count = $this->tipsy()->db()->get('select count(*) as c from `upload`')[0]->c;
+
+		if ($count > $this->tipsy()->config()['data']['max']) {
+			$this->tipsy()->db()->exec('delete from `upload` order by id asc limit '.($count - $this->tipsy()->config()['data']['max']));
+		}
+
 		$u = $this->load($u->id);
 
 		if ($this->tipsy()->config()['data']['type'] == 'local') {
