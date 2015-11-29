@@ -109,7 +109,12 @@ $bs->service('Tipsy\Resource/Upload', [
 		$count = $this->tipsy()->db()->get('select count(*) as c from `upload`')[0]->c;
 
 		if ($count > $this->tipsy()->config()['data']['max']) {
-			$this->tipsy()->db()->exec('delete from `upload` order by id asc limit '.($count - $this->tipsy()->config()['data']['max']));
+			if ($this->tipsy()->db()->driver() == 'pgsql') {
+				$q = 'delete from "upload" where ctid in (select ctid FROM "upload" order by date limit '.($count - $this->tipsy()->config()['data']['max']);
+			} else {
+				$q = 'delete from `upload` order by id asc limit '.($count - $this->tipsy()->config()['data']['max']);
+			}
+			$this->tipsy()->db()->exec($q);
 		}
 
 		$u = $this->load($u->id);
