@@ -12,13 +12,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/arzynik/Tipsy.git",
-                "reference": "7df05af55750eca668a38ec975618645944ae5eb"
+                "url": "https://github.com/arzynik/tipsy.git",
+                "reference": "0c3dd50ad1ae5c3ead54173908040914f78f0688"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/arzynik/Tipsy/zipball/7df05af55750eca668a38ec975618645944ae5eb",
-                "reference": "7df05af55750eca668a38ec975618645944ae5eb",
+                "url": "https://api.github.com/repos/arzynik/tipsy/zipball/0c3dd50ad1ae5c3ead54173908040914f78f0688",
+                "reference": "0c3dd50ad1ae5c3ead54173908040914f78f0688",
                 "shasum": ""
             },
             "require": {
@@ -52,7 +52,7 @@
                 "mvw",
                 "php"
             ],
-            "time": "2015-11-27 22:34:16"
+            "time": "2015-11-29 01:26:01"
         }
     ],
     "packages-dev": [],
