@@ -85,7 +85,14 @@ class Db extends \Tipsy\Db {
 	}
 
 	public function query($query, $args = []) {
-		return parent::query(self::mysqlToPgsql($query), $args);
+		if (!$query) {
+			throw new Exception('Query is emtpy');
+		}
+		$query = self::mysqlToPgsql($query);
+		if (!$query) {
+			throw new Exception('mysqlToPgsql Query is emtpy');
+		}
+		return parent::query($query, $args);
 	}
 
 	public function exec($query) {
