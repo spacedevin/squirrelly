@@ -24,4 +24,4 @@ You will need MySQL and Apache/Nginx installed.
 6. If using Nginx, you should use the **src/nginx.conf** file.
 
 
-See [Tipsy Documentation](https://github.com/arzynik/Tipsy/wiki) for more information.
+See [Tipsy Documentation](https://github.com/arzynik/tipsy/wiki) for more information.
