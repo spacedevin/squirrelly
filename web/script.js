@@ -16,7 +16,10 @@ angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
 				redirectTo: '/'
 			});
 
-		$locationProvider.html5Mode(true);
+		$locationProvider.html5Mode({
+			enabled: true,
+			requireBase: false
+		});
 	})
 
 	.run(function($rootScope, $location) {
