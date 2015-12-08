@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/arzynik/tipsy.git",
-                "reference": "0c3dd50ad1ae5c3ead54173908040914f78f0688"
+                "reference": "130bf2a26c6f7b5acf63c9e6e99d5a2102f0cd1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/arzynik/tipsy/zipball/0c3dd50ad1ae5c3ead54173908040914f78f0688",
-                "reference": "0c3dd50ad1ae5c3ead54173908040914f78f0688",
+                "url": "https://api.github.com/repos/arzynik/tipsy/zipball/130bf2a26c6f7b5acf63c9e6e99d5a2102f0cd1a",
+                "reference": "130bf2a26c6f7b5acf63c9e6e99d5a2102f0cd1a",
                 "shasum": ""
             },
             "require": {
@@ -29,9 +29,12 @@
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Tipsy": "src/"
-                }
+                "psr-4": {
+                    "Tipsy\\": "src/"
+                },
+                "files": [
+                    "src/Tipsy.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -52,7 +55,7 @@
                 "mvw",
                 "php"
             ],
-            "time": "2015-11-29 01:26:01"
+            "time": "2015-12-08 06:14:03"
         }
     ],
     "packages-dev": [],
