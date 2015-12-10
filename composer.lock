@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/arzynik/tipsy.git",
-                "reference": "653639bc025216e537a2f5715e48c58d5811846d"
+                "reference": "50f695160cb12b98f81f90b0294e35472087827d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/arzynik/tipsy/zipball/653639bc025216e537a2f5715e48c58d5811846d",
-                "reference": "653639bc025216e537a2f5715e48c58d5811846d",
+                "url": "https://api.github.com/repos/arzynik/tipsy/zipball/50f695160cb12b98f81f90b0294e35472087827d",
+                "reference": "50f695160cb12b98f81f90b0294e35472087827d",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
                 "mvw",
                 "php"
             ],
-            "time": "2015-12-09 20:44:57"
+            "time": "2015-12-09 20:47:19"
         }
     ],
     "packages-dev": [],
