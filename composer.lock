@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fe663920e91c9908dc7d6015de3c0a7d",
-    "content-hash": "1f97c51193b0f391397e1f853e071f6f",
+    "hash": "05c785be45d01389a38b7fe0935153f2",
+    "content-hash": "6e013195f6651cf3c0eeb111b5fb75cc",
     "packages": [
         {
-            "name": "arzynik/tipsy",
+            "name": "tipsyphp/tipsy",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/arzynik/tipsy.git",
-                "reference": "0c3dd50ad1ae5c3ead54173908040914f78f0688"
+                "url": "https://github.com/tipsyphp/tipsy.git",
+                "reference": "43f0aa5f311a67dd1305e79616220a9e88b1b7ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/arzynik/tipsy/zipball/0c3dd50ad1ae5c3ead54173908040914f78f0688",
-                "reference": "0c3dd50ad1ae5c3ead54173908040914f78f0688",
+                "url": "https://api.github.com/repos/tipsyphp/tipsy/zipball/43f0aa5f311a67dd1305e79616220a9e88b1b7ff",
+                "reference": "43f0aa5f311a67dd1305e79616220a9e88b1b7ff",
                 "shasum": ""
             },
             "require": {
@@ -29,9 +29,12 @@
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Tipsy": "src/"
-                }
+                "psr-4": {
+                    "Tipsy\\": "src/"
+                },
+                "files": [
+                    "src/Tipsy.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -52,14 +55,14 @@
                 "mvw",
                 "php"
             ],
-            "time": "2015-11-29 01:26:01"
+            "time": "2015-12-10 18:36:21"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "arzynik/tipsy": 20
+        "tipsyphp/tipsy": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
