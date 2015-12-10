@@ -12,6 +12,7 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
+<<<<<<< HEAD
                 "url": "https://github.com/tipsyphp/tipsy.git",
                 "reference": "43f0aa5f311a67dd1305e79616220a9e88b1b7ff"
             },
@@ -19,6 +20,15 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/tipsyphp/tipsy/zipball/43f0aa5f311a67dd1305e79616220a9e88b1b7ff",
                 "reference": "43f0aa5f311a67dd1305e79616220a9e88b1b7ff",
+=======
+                "url": "https://github.com/arzynik/tipsy.git",
+                "reference": "50f695160cb12b98f81f90b0294e35472087827d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arzynik/tipsy/zipball/50f695160cb12b98f81f90b0294e35472087827d",
+                "reference": "50f695160cb12b98f81f90b0294e35472087827d",
+>>>>>>> 442abc444db2f249bb27ffa73ea2ff2ea1cc532e
                 "shasum": ""
             },
             "require": {
@@ -55,7 +65,12 @@
                 "mvw",
                 "php"
             ],
+<<<<<<< HEAD
             "time": "2015-12-10 18:36:21"
+=======
+            "abandoned": "https://github.com/tipsyphp/tipsy",
+            "time": "2015-12-09 20:47:19"
+>>>>>>> 442abc444db2f249bb27ffa73ea2ff2ea1cc532e
         }
     ],
     "packages-dev": [],
