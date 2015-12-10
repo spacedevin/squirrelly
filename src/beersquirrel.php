@@ -7,9 +7,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $bs = new Tipsy\Tipsy;
 
 $bs->config('../src/config.ini');
-if (file_exists('../src/config.db.ini')) {
-	$bs->config('../src/config.db.ini');
-}
+
 if (getenv('HEROKU')) {
 	$bs->config('../src/config.heroku.ini');
 }
@@ -17,6 +15,8 @@ $envdb = getenv('CLEARDB_DATABASE_URL') ? getenv('CLEARDB_DATABASE_URL') : geten
 
 if ($envdb) {
 	$bs->config(['db' => ['url' => $envdb]]);
+} elseif (file_exists('../src/config.db.ini')) {
+	$bs->config('../src/config.db.ini');
 }
 
 /*
