@@ -6,7 +6,7 @@ html {
 }
 
 body {
-	background: #bde1d9;
+	background: #b9dbd4;
 	color: #000;
 	font: 10px Ruda, Open Sans, Helvetica, sanf-serif;
 }
@@ -31,8 +31,10 @@ a {
 }
 
 .logo .svg {
-	height: 9em;
+	height: 11em;
+	width: 11em;
 	background: url(/icon.svg) center center no-repeat;
+	background-size: contain;
 }
 
 .content {
