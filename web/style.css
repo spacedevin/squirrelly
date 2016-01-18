@@ -6,8 +6,8 @@ html {
 }
 
 body {
-	background: #eee;
-	color: #444;
+	background: #bde1d9;
+	color: #000;
 	font: 10px Ruda, Open Sans, Helvetica, sanf-serif;
 }
 
@@ -18,15 +18,15 @@ html,body {
 }
 
 a {
-	color: #888;
+	color: #df6f7b;
 }
 
 ::selection {
-	background: #e1574c;
+	background: #8eb2af;
 	color: #fff;
 }
 ::-moz-selection {
-	background: #e1574c;
+	background: #8eb2af;
 	color: #fff;
 }
 
@@ -62,13 +62,13 @@ h2 {
 .data {
 	margin-top: 2.4em;
 	color: #eee;
-	background: #444;
+	background: #df6f7b;
 	padding: 2em 2.2em 1.8em 2.2em;
 }
 
 .text-input-wrap {
 	margin-top: 1em;
-	border: 3px solid #444;
+	border: 3px solid #df6f7b;
 }
 
 .text-input {
@@ -115,7 +115,7 @@ h2 {
 .footer {
 	margin-top: 3em;
 	font-size: 1em;
-	color: #888;
+	color: #222;
 	line-height: 1.7em;
 	margin-bottom: 1em;
 }

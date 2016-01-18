@@ -1,5 +1,5 @@
 
-angular.module('BeerSquirrel', ['ngRoute', 'ngResource'])
+angular.module('Squirrelly', ['ngRoute', 'ngResource'])
 	.config(function($routeProvider, $locationProvider){
 		$routeProvider
 			.when('/', {

@@ -1,8 +1,8 @@
-![Beer Squirrel](http://beersquirrel.xyz/icon.svg)
+![Squirrelly](http://squirrelly.io/icon.svg)
 
-## Beer Squirrel
+## Squirrelly
 
-Beer Squirrel is an Image and text sharing tool that allows you to paste straight from your clipboard and share with an anonymous url.
+Squirrelly is an Image and text sharing tool that allows you to paste straight from your clipboard and share with an anonymous url.
 
 
 #### Deploying on Heroku

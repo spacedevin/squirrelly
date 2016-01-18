@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/beersquirrel.php';
+require_once __DIR__ . '/squirrelly.php';
 
 function getId($file) {
 	$id = explode('.',$file)[0];

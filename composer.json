@@ -1,9 +1,9 @@
 {
-	"name": "arzynik/beersquirrel",
+	"name": "arzynik/squirrelly",
 	"authors": [
 		{
 			"name": "Devin",
-			"email": "devin@beersquirrel.xyz"
+			"email": "devin@squirrelly.io"
 		}
 	],
 	"require": {
