@@ -6,7 +6,7 @@ html {
 }
 
 body {
-	background: #b9dbd4;
+	background: #c8e6db;
 	color: #000;
 	font: 10px Ruda, Open Sans, Helvetica, sanf-serif;
 }
@@ -63,14 +63,14 @@ h2 {
 
 .data {
 	margin-top: 2.4em;
-	color: #eee;
-	background: #df6f7b;
+	color: #111;
+	background: #f8f8e4;
 	padding: 2em 2.2em 1.8em 2.2em;
 }
 
 .text-input-wrap {
 	margin-top: 1em;
-	border: 3px solid #df6f7b;
+	border: 3px solid #f8f8e4;
 }
 
 .text-input {
