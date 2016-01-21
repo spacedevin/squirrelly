@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "05c785be45d01389a38b7fe0935153f2",
-    "content-hash": "6e013195f6651cf3c0eeb111b5fb75cc",
+    "hash": "886e9af9f433d4e96af4df8f7b4a2092",
+    "content-hash": "5fba44b19b72c17adc5ef35ef9206a15",
     "packages": [
         {
             "name": "tipsyphp/tipsy",
@@ -13,16 +13,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tipsyphp/tipsy.git",
-                "reference": "d02beb0a46523a956edf11153785d949d88d2b9d"
+                "reference": "81d8321031ad126ee9f47a506da6fbd439fd47bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tipsyphp/tipsy/zipball/d02beb0a46523a956edf11153785d949d88d2b9d",
-                "reference": "d02beb0a46523a956edf11153785d949d88d2b9d",
+                "url": "https://api.github.com/repos/tipsyphp/tipsy/zipball/81d8321031ad126ee9f47a506da6fbd439fd47bc",
+                "reference": "81d8321031ad126ee9f47a506da6fbd439fd47bc",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0"
+                "php": ">=5.5.0"
             },
             "require-dev": {
                 "satooshi/php-coveralls": "dev-master"
@@ -55,7 +55,7 @@
                 "mvw",
                 "php"
             ],
-            "time": "2015-12-13 15:55:48"
+            "time": "2016-01-21 20:38:31"
         }
     ],
     "packages-dev": [],
