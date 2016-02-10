@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tipsyphp/tipsy.git",
-                "reference": "d993cd7f588a398672b300ea99fe1e7453e6c51b"
+                "reference": "eb2b11301b2fbf178fddf27cb0d5070fcf69f99a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tipsyphp/tipsy/zipball/d993cd7f588a398672b300ea99fe1e7453e6c51b",
-                "reference": "d993cd7f588a398672b300ea99fe1e7453e6c51b",
+                "url": "https://api.github.com/repos/tipsyphp/tipsy/zipball/eb2b11301b2fbf178fddf27cb0d5070fcf69f99a",
+                "reference": "eb2b11301b2fbf178fddf27cb0d5070fcf69f99a",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
                 "mvw",
                 "php"
             ],
-            "time": "2016-01-28 00:32:08"
+            "time": "2016-02-10 00:07:30"
         }
     ],
     "packages-dev": [],
