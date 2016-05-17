@@ -1,4 +1,4 @@
-![Squirrelly](http://squirrelly.io/icon-pink.svg)
+![Squirrelly](http://squirrelly.io/icon.svg)
 
 ## Squirrelly
 
