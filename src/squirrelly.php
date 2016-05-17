@@ -143,7 +143,13 @@ $bs->service('Tipsy\Resource/Upload', [
 			}
 		}
 
-		$this->save();
+		$sql = 'UPDATE upload SET data=:data, size=:size WHERE id=:id';
+		$stmt = $this->tipsy()->db()->db()->prepare($sql);
+
+		$stmt->bindParam(':id', $this->id);
+		$stmt->bindParam(':size', $this->size);
+		$stmt->bindParam(':data', $this->data, PDO::PARAM_LOB);
+		$stmt->execute();
 	},
 	display => function() {
 		if ($this->tipsy()->config()['data']['type'] == 'local') {
