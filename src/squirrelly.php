@@ -19,59 +19,6 @@ if ($envdb) {
 	$bs->config('../src/config.db.ini');
 }
 
-/*
-experiements with tipsy models
-if (strpos($envdb, 'postgres') !== false) {
-	$bs->service('Tipsy\Db/Db', [
-		mysqlToPgsql => function($query, $args = []) {
-			// replace backticks
-			$query = str_replace('`','"', $query);
-
-			// replace add single quotes to interval statements
-			$query = preg_replace('/(interval) ([0-9]+) ([a-z]+)/i','\\1 \'\\2 \\3\'', $query);
-
-			// replace unix_timestamp
-			$query = preg_replace('/unix_timestamp( )?\((.*?)\)/i','extract(epoch FROM \\2)', $query);
-
-			// replace date_sub
-			$query = preg_replace('/(date_sub\((.*?),(.*?))\)/i','\\2 - \\3', $query);
-
-			// replace date formats
-			$query = preg_replace_callback('/date_format\(( )?(.*?),( )?("(.*?)"|\'(.*?)\')( )?\)/i',function($m) {
-				$find = ['/\%Y/', '/\%m/', '/\%d/', '/\%H/', '/\%i/', '/\%s/', '/\%W/'];
-				$replace = ['YYYY', 'MM', 'DD', 'HH24', 'MI', 'SS', 'D'];
-				$format = preg_replace($find, $replace, $m[6] ? $m[6] : $m[5]);
-				return 'to_char('.$m[2].', \''.$format.'\')';
-			}, $query);
-
-
-			if ($args) {
-				foreach ($args as $k => $v) {
-					if ($v === true) {
-						$args[$k] = 'true';
-					} elseif ($v === false) {
-						$args[$k] = 'false';
-					}
-				}
-			}
-			return [query => $query, args => $args];
-		},
-
-		query => function($query, $args = []) {
-			$filter = $this->mysqlToPgsql($query, $args);
-			return $this->query($filter['query'], $filter['args']);
-		},
-
-		exec => function($query) {
-			$filter = $this->mysqlToPgsql($query);
-			return $this->exec($filter['query']);
-		}
-	]);
-
-}
-*/
-//die($bs->service('Db')->mysqlToPgsql('test`asd`')['query']);
-
 // transforms mysql queries to pgsql (kinda)
 class Db extends \Tipsy\Db {
 	public static function mysqlToPgsql($query) {
