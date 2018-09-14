@@ -191,12 +191,7 @@ angular.module('Squirrelly', ['ngRoute', 'ngResource'])
 
 					var paste = {};
 
-					if (/text\/plain|text\/html/.test(e.clipboardData.types)) {
-
-						var blob = new Blob([e.clipboardData.getData('text/plain')], {type : 'text/plain'});
-						UploadService.uploadFile(blob);
-
-					} else if (/Files/.test(e.clipboardData.types)) {
+					if (/Files/.test(e.clipboardData.types)) {
 
 						for (var i = 0; i < e.clipboardData.items.length; i++) {
 							if (e.clipboardData.items[i].kind == 'file' && e.clipboardData.items[i].type == 'image/png') {
@@ -208,6 +203,12 @@ angular.module('Squirrelly', ['ngRoute', 'ngResource'])
 								break;
 							}
 						}
+
+					} else if (/text\/plain|text\/html/.test(e.clipboardData.types)) {
+
+						var blob = new Blob([e.clipboardData.getData('text/plain')], {type : 'text/plain'});
+						UploadService.uploadFile(blob);
+
 					}
 				});
 			}
